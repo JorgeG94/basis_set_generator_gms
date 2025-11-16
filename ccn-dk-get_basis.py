@@ -53,14 +53,16 @@ def zeta_index_to_basis_name(n_zeta_idx):
         raise ValueError(f"Invalid zeta index: {n_zeta_idx}. Must be 1-8.")
     
     return basis_map[n_zeta_idx]
-def json_to_gamess_fortran_modular(basis_names, elements=None, base_subroutine_name="get_ccn_dk_basis"):
+
+def json_to_gamess_fortran_modular(basis_names, elements=None, module_name="basis_ccn_dk", base_subroutine_name="get_ccn_dk_basis"):
     """
-    Generate modular GAMESS Fortran subroutines with a driver and per-zeta workers.
+    Generate modular GAMESS Fortran module with a driver and per-zeta workers.
     Uses a derived type for basis set data.
     
     Args:
         basis_names: List of basis set names (e.g., ['cc-pvdz-dk', 'cc-pvtz-dk', 'cc-pvqz-dk', 'cc-pv5z-dk'])
         elements: List of element symbols (e.g., ['H', 'He']) or None to get all available
+        module_name: Name of the module to wrap everything
         base_subroutine_name: Base name for subroutines
     """
     
@@ -103,8 +105,29 @@ def json_to_gamess_fortran_modular(basis_names, elements=None, base_subroutine_n
         if missing_in:
             print(f"  {elem}: available in {len(available_in)}/{len(basis_names)} basis sets (missing: {', '.join(missing_in)})")
     
-    # Generate all subroutines
+    # Start building the module
     all_fortran_code = []
+    
+    # Module header
+    elem_imports = ', '.join([e.upper() for e in elements_to_use])
+    all_fortran_code.append(f"module {module_name}")
+    all_fortran_code.append(f"  use periodic_table, only: {elem_imports}")
+    all_fortran_code.append("  use basis_types, only: n_zeta_to_basis, PVDZ, PVTZ, PVQZ, PV5Z")
+    all_fortran_code.append("  use basis_set_data, only: basis_set_type")
+    all_fortran_code.append("  use iso_fortran_env, only: real64")
+    all_fortran_code.append("  implicit none")
+    all_fortran_code.append("  private")
+    all_fortran_code.append(f"  public :: {base_subroutine_name}")
+    all_fortran_code.append("")
+    all_fortran_code.append("contains")
+    all_fortran_code.append("")
+    
+    # Generate driver subroutine
+    driver_code = generate_driver_subroutine(
+        base_subroutine_name, elements_to_use, basis_names
+    )
+    all_fortran_code.append(driver_code)
+    all_fortran_code.append("")
     
     # Generate per-zeta subroutines
     for n_zeta_idx, basis_name in enumerate(basis_names, start=1):
@@ -116,14 +139,10 @@ def json_to_gamess_fortran_modular(basis_names, elements=None, base_subroutine_n
             elements_to_use, basis_data[basis_name]
         )
         all_fortran_code.append(worker_code)
-        all_fortran_code.append("")  # Blank line between subroutines
+        all_fortran_code.append("")
     
-    # Generate driver subroutine
-    driver_code = generate_driver_subroutine(
-        base_subroutine_name, elements_to_use, basis_names
-    )
-    all_fortran_code.insert(0, driver_code)
-    all_fortran_code.insert(1, "")
+    # Module footer
+    all_fortran_code.append(f"end module {module_name}")
     
     return '\n'.join(all_fortran_code)
 
@@ -132,30 +151,25 @@ def generate_worker_subroutine(basis_name, basis_const_name, subroutine_name, el
     """Generate a worker subroutine for a specific zeta level."""
     fortran_lines = []
     
-    # Worker subroutine header
-    fortran_lines.append(f"subroutine {subroutine_name}(basis_data, element_number, ilast)")
-    elem_imports = ', '.join([e.upper() for e in elements])
-    fortran_lines.append(f"  use periodic_table, only: {elem_imports}")
-    fortran_lines.append(f"  use basis_set_data, only: basis_set_type")
-    fortran_lines.append("  use iso_fortran_env, only: real64")
-    fortran_lines.append("  implicit none")
-    fortran_lines.append("  type(basis_set_type), intent(out) :: basis_data")
-    fortran_lines.append("  integer, intent(in) :: element_number")
-    fortran_lines.append("  integer, intent(out) :: ilast")
-    fortran_lines.append("  integer :: iw")
-    fortran_lines.append("  logical :: maswrk")
-    fortran_lines.append("  maswrk = .true.")
-    fortran_lines.append("  iw = 6")
-    fortran_lines.append("  ilast = 0")
+    # Worker subroutine header (no use statements needed - in module)
+    fortran_lines.append(f"  subroutine {subroutine_name}(basis_data, element_number, ilast)")
+    fortran_lines.append("    type(basis_set_type), intent(out) :: basis_data")
+    fortran_lines.append("    integer, intent(in) :: element_number")
+    fortran_lines.append("    integer, intent(out) :: ilast")
+    fortran_lines.append("    integer :: iw")
+    fortran_lines.append("    logical :: maswrk")
+    fortran_lines.append("    maswrk = .true.")
+    fortran_lines.append("    iw = 6")
+    fortran_lines.append("    ilast = 0")
     fortran_lines.append("")
-    fortran_lines.append("  select case (element_number)")
+    fortran_lines.append("    select case (element_number)")
     fortran_lines.append("")
     
     # Process each element
     for elem_symbol in elements:
         elem_name = elem_symbol.upper()
         
-        fortran_lines.append(f"    case({elem_name})")
+        fortran_lines.append(f"      case({elem_name})")
         
         # Find the correct key for this element
         element_key = None
@@ -167,9 +181,9 @@ def generate_worker_subroutine(basis_name, basis_const_name, subroutine_name, el
         
         if element_key is None:
             # Element not available in this basis set
-            fortran_lines.append(f"      if(maswrk) write(iw,*) 'ERROR: {basis_name} basis not available for element {elem_name}'")
-            fortran_lines.append("      ilast = -1")
-            fortran_lines.append("      return")
+            fortran_lines.append(f"        if(maswrk) write(iw,*) 'ERROR: {basis_name} basis not available for element {elem_name}'")
+            fortran_lines.append("        ilast = -1")
+            fortran_lines.append("        return")
         else:
             element_data = basis_dict['center_data'][element_key]
             
@@ -196,22 +210,22 @@ def generate_worker_subroutine(basis_name, basis_const_name, subroutine_name, el
                         exp_str = format_fortran_float(exp)
                         coef_str = format_fortran_float(coef)
                         
-                        fortran_lines.append(f"      basis_data%exponents({index}) = {exp_str}")
-                        fortran_lines.append(f"      basis_data%{am_label}({index}) = {coef_str}")
+                        fortran_lines.append(f"        basis_data%exponents({index}) = {exp_str}")
+                        fortran_lines.append(f"        basis_data%{am_label}({index}) = {coef_str}")
                         index += 1
             
-            fortran_lines.append(f"      ilast = {index - 1}")
+            fortran_lines.append(f"        ilast = {index - 1}")
         
         fortran_lines.append("")
     
     # Default case
-    fortran_lines.append("    case default")
-    fortran_lines.append("      if(maswrk) write(iw,*) 'ERROR: Element not supported in this basis subroutine'")
-    fortran_lines.append("      ilast = -1")
-    fortran_lines.append("      return")
-    fortran_lines.append("  end select")
+    fortran_lines.append("      case default")
+    fortran_lines.append("        if(maswrk) write(iw,*) 'ERROR: Element not supported in this basis subroutine'")
+    fortran_lines.append("        ilast = -1")
+    fortran_lines.append("        return")
+    fortran_lines.append("    end select")
     fortran_lines.append("")
-    fortran_lines.append(f"end subroutine {subroutine_name}")
+    fortran_lines.append(f"  end subroutine {subroutine_name}")
     
     return '\n'.join(fortran_lines)
 
@@ -220,25 +234,21 @@ def generate_driver_subroutine(base_name, elements, basis_names):
     """Generate the driver subroutine that dispatches to workers."""
     fortran_lines = []
     
-    # Driver header
-    fortran_lines.append(f"subroutine {base_name}(basis_data, element_number, n_zeta, ilast)")
-    fortran_lines.append("  use basis_types, only: n_zeta_to_basis, PVDZ, PVTZ, PVQZ, PV5Z")
-    fortran_lines.append("  use basis_set_data, only: basis_set_type")
-    fortran_lines.append("  use iso_fortran_env, only: real64")
-    fortran_lines.append("  implicit none")
-    fortran_lines.append("  type(basis_set_type), intent(out) :: basis_data")
-    fortran_lines.append("  integer, intent(in) :: element_number, n_zeta")
-    fortran_lines.append("  integer, intent(out) :: ilast")
-    fortran_lines.append("  integer :: basis_type")
-    fortran_lines.append("  integer :: iw")
-    fortran_lines.append("  logical :: maswrk")
+    # Driver header (no use statements needed - in module)
+    fortran_lines.append(f"  subroutine {base_name}(basis_data, element_number, n_zeta, ilast)")
+    fortran_lines.append("    type(basis_set_type), intent(out) :: basis_data")
+    fortran_lines.append("    integer, intent(in) :: element_number, n_zeta")
+    fortran_lines.append("    integer, intent(out) :: ilast")
+    fortran_lines.append("    integer :: basis_type")
+    fortran_lines.append("    integer :: iw")
+    fortran_lines.append("    logical :: maswrk")
     fortran_lines.append("")
-    fortran_lines.append("  basis_type = n_zeta_to_basis(n_zeta)")
-    fortran_lines.append("  maswrk = .true.")
-    fortran_lines.append("  iw = 6")
-    fortran_lines.append("  ilast = 0")
+    fortran_lines.append("    basis_type = n_zeta_to_basis(n_zeta)")
+    fortran_lines.append("    maswrk = .true.")
+    fortran_lines.append("    iw = 6")
+    fortran_lines.append("    ilast = 0")
     fortran_lines.append("")
-    fortran_lines.append("  select case (basis_type)")
+    fortran_lines.append("    select case (basis_type)")
     fortran_lines.append("")
     
     # Create cases for each basis type
@@ -246,22 +256,20 @@ def generate_driver_subroutine(base_name, elements, basis_names):
         basis_const_name = zeta_index_to_basis_name(n_zeta_idx)
         worker_name = f"{base_name}_{basis_const_name.lower()}"
         
-        fortran_lines.append(f"    case ({basis_const_name})")
-        fortran_lines.append(f"      call {worker_name}(basis_data, element_number, ilast)")
+        fortran_lines.append(f"      case ({basis_const_name})")
+        fortran_lines.append(f"        call {worker_name}(basis_data, element_number, ilast)")
         fortran_lines.append("")
     
     # Default case
-    fortran_lines.append("    case default")
-    fortran_lines.append("      if(maswrk) write(iw,*) 'ERROR: Basis type not supported'")
-    fortran_lines.append("      ilast = -1")
-    fortran_lines.append("      return")
-    fortran_lines.append("  end select")
+    fortran_lines.append("      case default")
+    fortran_lines.append("        if(maswrk) write(iw,*) 'ERROR: Basis type not supported'")
+    fortran_lines.append("        ilast = -1")
+    fortran_lines.append("        return")
+    fortran_lines.append("    end select")
     fortran_lines.append("")
-    fortran_lines.append(f"end subroutine {base_name}")
+    fortran_lines.append(f"  end subroutine {base_name}")
     
     return '\n'.join(fortran_lines)
-
-
     
 def get_atomic_number(symbol):
     """Get atomic number from element symbol."""
