@@ -82,19 +82,24 @@ def json_to_gamess_fortran(basis_names, elements, subroutine_name="get_ccn_dk_fi
     fortran_lines = []
     
     # Subroutine header
-    fortran_lines.append(f"subroutine {subroutine_name}(e,s,p,d,f,g,h,element_number,n_zeta,ilast)")
-    fortran_lines.append("  use periodic_tables, only: H, HE")
+    fortran_lines.append(f"subroutine {subroutine_name}(exponents,s_coef,p_coef,d_coef,f_coef,g_coef,h_coef,element_number,n_zeta,ilast)")
+    fortran_lines.append("  use periodic_table, only: H, HE")
     fortran_lines.append("  use basis_types, only: n_zeta_to_basis, PVDZ, PVTZ, PVQZ, PV5Z")
-    fortran_lines.append("  use comm_iofile, only: iw")
-    fortran_lines.append("  use comm_par, only: maswrk")
-    fortran_lines.append("  use prec, only: dp")
+    fortran_lines.append("  !use comm_iofile, only: iw")
+    fortran_lines.append("  !use comm_par, only: maswrk")
+    fortran_lines.append("  !use prec, only: dp")
+    fortran_lines.append("  use iso_fortran_env, only: real64")
     fortran_lines.append("  implicit none")
     fortran_lines.append("  integer, intent(in) :: element_number,n_zeta")
     fortran_lines.append("  integer, intent(inout) :: ilast")
-    fortran_lines.append("  real(kind=dp), intent(inout) :: e(310),s(310),p(310),d(310),&")
-    fortran_lines.append("                                 f(310),g(310),h(310)")
+    fortran_lines.append("  real(kind=real64), intent(inout) :: exponents(310),s_coef(310),p_coef(310),d_coef(310),&")
+    fortran_lines.append("                                 f_coef(310),g_coef(310),h_coef(310)")
     fortran_lines.append("  integer :: basis_type")
+    fortran_lines.append("  integer :: iw")
+    fortran_lines.append("  logical :: maswrk")
     fortran_lines.append("  basis_type = n_zeta_to_basis(n_zeta)")
+    fortran_lines.append("  maswrk = .true.")
+    fortran_lines.append("  iw = 1")
     fortran_lines.append("  select case (element_number)")
     fortran_lines.append("")
     
@@ -137,7 +142,7 @@ def json_to_gamess_fortran(basis_names, elements, subroutine_name="get_ccn_dk_fi
                 index = 1
                 for shell in element_data['electron_shells']:
                     am = shell['angular_momentum'][0]
-                    am_label = ['s', 'p', 'd', 'f', 'g', 'h', 'i'][am]
+                    am_label = ['s_coef', 'p_coef', 'd_coef', 'f_coef', 'g_coef', 'h_coef', 'i_coef'][am]
                     exponents = [float(e) for e in shell['exponents']]
                     coefficients = shell['coefficients']
                     
@@ -156,7 +161,7 @@ def json_to_gamess_fortran(basis_names, elements, subroutine_name="get_ccn_dk_fi
                             exp_str = format_fortran_float(exp)
                             coef_str = format_fortran_float(coef)
                             
-                            fortran_lines.append(f"           e({index}) = {exp_str}")
+                            fortran_lines.append(f"           exponents({index}) = {exp_str}")
                             fortran_lines.append(f"           {am_label}({index}) = {coef_str}")
                             index += 1
 
@@ -169,19 +174,19 @@ def json_to_gamess_fortran(basis_names, elements, subroutine_name="get_ccn_dk_fi
         # Add final ELSE clause after all basis sets
         fortran_lines.append("      case default")
         fortran_lines.append("         if(maswrk) write(iw,9999)")
-        fortran_lines.append("         call abrt")
-        fortran_lines.append("      end if")
+        fortran_lines.append("         !call abrt")
+        fortran_lines.append("      end select ")
         fortran_lines.append("      return")
         fortran_lines.append("")
 
     # Default case and footer
     fortran_lines.append("      case default")
     fortran_lines.append("        if(maswrk) write(iw,9998)")
-    fortran_lines.append("        call abrt")
+    fortran_lines.append("        !call abrt")
     fortran_lines.append("      end select")
     fortran_lines.append("      return")
-    fortran_lines.append(" 9999 format(/1X,'ERROR: DK CORRELATION CONSISTENT BASIS',")
-    fortran_lines.append("     *      ' SETS ARE ONLY AVAILABLE FOR DZ-5Z')")
+    fortran_lines.append(" 9999 format(/1X,'ERROR: DK CORRELATION CONSISTENT BASIS',&")
+    fortran_lines.append("           ' SETS ARE ONLY AVAILABLE FOR DZ-5Z')")
     fortran_lines.append(" 9998 format(/1X,'ERROR: Non first-period element in DK basis subroutine')")
     fortran_lines.append("")
     fortran_lines.append("end subroutine " + subroutine_name)
