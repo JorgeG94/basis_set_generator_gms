@@ -3,7 +3,10 @@ submodule (basis_ccn_dk) basis_ccn_dk_pv5z
 
 contains
 
-  module procedure get_ccn_dk_basis_pv5z
+  module subroutine get_ccn_dk_basis_pv5z(basis_data, element_number, ilast)
+    type(basis_set_type), intent(out) :: basis_data
+    integer, intent(in) :: element_number
+    integer, intent(out) :: ilast
     integer :: iw
     logical :: maswrk
     maswrk = .true.
@@ -12404,6 +12407,6 @@ contains
         return
     end select
 
-  end procedure get_ccn_dk_basis_pv5z
+  end subroutine get_ccn_dk_basis_pv5z
 
 end submodule basis_ccn_dk_pv5z

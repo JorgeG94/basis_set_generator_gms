@@ -256,7 +256,10 @@ def generate_worker_submodule(parent_module, submodule_name, basis_name, basis_c
     fortran_lines.append("")
     
     # Worker subroutine implementation
-    fortran_lines.append(f"  module procedure {worker_name}")
+    fortran_lines.append(f"  module subroutine {worker_name}(basis_data, element_number, ilast)")
+    fortran_lines.append("    type(basis_set_type), intent(out) :: basis_data")
+    fortran_lines.append("    integer, intent(in) :: element_number")
+    fortran_lines.append("    integer, intent(out) :: ilast")
     fortran_lines.append("    integer :: iw")
     fortran_lines.append("    logical :: maswrk")
     fortran_lines.append("    maswrk = .true.")
@@ -326,7 +329,7 @@ def generate_worker_submodule(parent_module, submodule_name, basis_name, basis_c
     fortran_lines.append("        return")
     fortran_lines.append("    end select")
     fortran_lines.append("")
-    fortran_lines.append(f"  end procedure {worker_name}")
+    fortran_lines.append(f"  end subroutine {worker_name}")
     fortran_lines.append("")
     fortran_lines.append(f"end submodule {submodule_name}")
     
