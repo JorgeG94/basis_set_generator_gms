@@ -28,6 +28,32 @@ def format_fortran_float(value):
     else:
         return f"{mantissa:.7f}D{exponent:03d}"
 
+def zeta_index_to_basis_name(n_zeta_idx):
+    """
+    Convert zeta index (1-8) to basis type name.
+    
+    Args:
+        n_zeta_idx: Integer from 1 to 8
+        
+    Returns:
+        String with basis name (e.g., 'PVDZ', 'PVTZ', etc.)
+    """
+    basis_map = {
+        1: 'PVDZ',
+        2: 'PVTZ',
+        3: 'PVQZ',
+        4: 'PV5Z',
+        5: 'PV6Z',
+        6: 'PV7Z',
+        7: 'PV8Z',
+        8: 'PV9Z'
+    }
+    
+    if n_zeta_idx not in basis_map:
+        raise ValueError(f"Invalid zeta index: {n_zeta_idx}. Must be 1-8.")
+    
+    return basis_map[n_zeta_idx]
+
 def json_to_gamess_fortran(basis_names, elements, subroutine_name="get_ccn_dk_first_period_basis"):
     """
     Generate GAMESS Fortran subroutine with hardcoded basis sets.
@@ -57,6 +83,8 @@ def json_to_gamess_fortran(basis_names, elements, subroutine_name="get_ccn_dk_fi
     
     # Subroutine header
     fortran_lines.append(f"subroutine {subroutine_name}(e,s,p,d,f,g,h,element_number,n_zeta,ilast)")
+    fortran_lines.append("  use periodic_tables, only: H, HE")
+    fortran_lines.append("  use basis_types, only: n_zeta_to_basis, PVDZ, PVTZ, PVQZ, PV5Z")
     fortran_lines.append("  use comm_iofile, only: iw")
     fortran_lines.append("  use comm_par, only: maswrk")
     fortran_lines.append("  use prec, only: dp")
@@ -65,7 +93,8 @@ def json_to_gamess_fortran(basis_names, elements, subroutine_name="get_ccn_dk_fi
     fortran_lines.append("  integer, intent(inout) :: ilast")
     fortran_lines.append("  real(kind=dp), intent(inout) :: e(310),s(310),p(310),d(310),&")
     fortran_lines.append("                                 f(310),g(310),h(310)")
-    fortran_lines.append("")
+    fortran_lines.append("  integer :: basis_type")
+    fortran_lines.append("  basis_type = n_zeta_to_basis(n_zeta)")
     fortran_lines.append("  select case (element_number)")
     fortran_lines.append("")
     
@@ -74,15 +103,17 @@ def json_to_gamess_fortran(basis_names, elements, subroutine_name="get_ccn_dk_fi
         elem_Z = get_atomic_number(elem_symbol)
         elem_name = elem_symbol.upper()
         
-        fortran_lines.append(f"!     ----- {elem_name} -----")
-        fortran_lines.append("")
-        fortran_lines.append(f"    case({elem_Z})")
-        fortran_lines.append("")
+        #fortran_lines.append(f"!     ----- {elem_name} -----")
+        #fortran_lines.append("")
+        fortran_lines.append(f"    case({elem_name})")
+        #fortran_lines.append("")
+        fortran_lines.append(f"      select case (basis_type)")
         
         # Process each basis set (n_zeta 1-4 for DZ-5Z)
         for n_zeta_idx, basis_name in enumerate(basis_names, start=1):
-            if(n_zeta_idx == 1):
-                fortran_lines.append(f"      if (n_zeta == {n_zeta_idx}) then")
+            fortran_lines.append(f"         case({zeta_index_to_basis_name(n_zeta_idx)})")
+            #if(n_zeta_idx == 1):
+            #    fortran_lines.append(f"      if ({zeta_index_to_basis_name(n_zeta_idx)}) then")
             
             # Get basis data for this element
             basis_dict = basis_data[basis_name]
@@ -125,18 +156,18 @@ def json_to_gamess_fortran(basis_names, elements, subroutine_name="get_ccn_dk_fi
                             exp_str = format_fortran_float(exp)
                             coef_str = format_fortran_float(coef)
                             
-                            fortran_lines.append(f"         e({index}) = {exp_str}")
-                            fortran_lines.append(f"         {am_label}({index}) = {coef_str}")
+                            fortran_lines.append(f"           e({index}) = {exp_str}")
+                            fortran_lines.append(f"           {am_label}({index}) = {coef_str}")
                             index += 1
 
-                fortran_lines.append(f"         ilast = {index - 1}")
+                fortran_lines.append(f"           ilast = {index - 1}")
 
-            # Handle multiple basis sets
-            if n_zeta_idx < len(basis_names):
-                fortran_lines.append(f"      else if (n_zeta == {n_zeta_idx + 1}) then")
+            # # Handle multiple basis sets
+            # if n_zeta_idx < len(basis_names):
+            #     fortran_lines.append(f"      case ({zeta_index_to_basis_name(n_zeta_idx+1)})")
         
         # Add final ELSE clause after all basis sets
-        fortran_lines.append("      else if (n_zeta >= 5) then")
+        fortran_lines.append("      case default")
         fortran_lines.append("         if(maswrk) write(iw,9999)")
         fortran_lines.append("         call abrt")
         fortran_lines.append("      end if")
@@ -160,7 +191,7 @@ def json_to_gamess_fortran(basis_names, elements, subroutine_name="get_ccn_dk_fi
 def get_atomic_number(symbol):
     """Get atomic number from element symbol."""
     periodic_table = {
-        'H': 1, 'He': 2, 'Li': 3, 'Be': 4, 'B': 5, 'C': 6, 'N': 7, 'O': 8, 
+        'Hydrogen': 1, 'Helium': 2, 'Li': 3, 'Be': 4, 'B': 5, 'C': 6, 'N': 7, 'O': 8, 
         'F': 9, 'Ne': 10, 'Na': 11, 'Mg': 12, 'Al': 13, 'Si': 14, 'P': 15, 
         'S': 16, 'Cl': 17, 'Ar': 18, 'K': 19, 'Ca': 20, 'Sc': 21, 'Ti': 22,
         'V': 23, 'Cr': 24, 'Mn': 25, 'Fe': 26, 'Co': 27, 'Ni': 28, 'Cu': 29,
