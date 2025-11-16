@@ -137,7 +137,7 @@ def json_to_gamess_fortran(basis_names, elements, subroutine_name="get_ccn_dk_fi
                 index = 1
                 for shell in element_data['electron_shells']:
                     am = shell['angular_momentum'][0]
-                    am_label = ['S', 'P', 'D', 'F', 'G', 'H', 'I'][am]
+                    am_label = ['s', 'p', 'd', 'f', 'g', 'h', 'i'][am]
                     exponents = [float(e) for e in shell['exponents']]
                     coefficients = shell['coefficients']
                     
