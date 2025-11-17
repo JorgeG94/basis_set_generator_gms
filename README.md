@@ -29,7 +29,7 @@ Currently, it will generate modules and submoduls for the following basis sets:
 I still need to figure out the best way for the interface. Currently the idea is:
 
 ```fortran
-  subroutine get_sto_basis(basis_data, element_number, basis_type, ilast)
+  subroutine load_basis(basis_data, element_number, basis_type, ilast)
     type(basis_set_type), intent(out) :: basis_data
     integer, intent(in) :: element_number, basis_type
     integer, intent(out) :: ilast
@@ -42,25 +42,25 @@ I still need to figure out the best way for the interface. Currently the idea is
 
     select case (basis_type)
 
-      case (STO_3G)
-        call get_sto_basis_sto_3g(basis_data, element_number, ilast)
+      ! CC_DK family
+      case (CC_PVDZ_DK)
+        call get_basis_cc_pvdz_dk(basis_data, element_number, ilast)
+      case (CC_PVTZ_DK)
+        call get_basis_cc_pvtz_dk(basis_data, element_number, ilast)
+      case (CC_PVQZ_DK)
+        call get_basis_cc_pvqz_dk(basis_data, element_number, ilast)
+      case (CC_PV5Z_DK)
+        call get_basis_cc_pv5z_dk(basis_data, element_number, ilast)
 
-      case (STO_4G)
-        call get_sto_basis_sto_4g(basis_data, element_number, ilast)
-
-      case (STO_5G)
-        call get_sto_basis_sto_5g(basis_data, element_number, ilast)
-
-      case (STO_6G)
-        call get_sto_basis_sto_6g(basis_data, element_number, ilast)
-
-      case default
-        if(maswrk) write(iw,*) 'ERROR: Basis type not supported'
-        ilast = -1
-        return
-    end select
-
-  end subroutine get_sto_basis
+      ! AUG_CC_DK family
+      case (AUG_CC_PVDZ_DK)
+        call get_basis_aug_cc_pvdz_dk(basis_data, element_number, ilast)
+      case (AUG_CC_PVTZ_DK)
+        call get_basis_aug_cc_pvtz_dk(basis_data, element_number, ilast)
+      case (AUG_CC_PVQZ_DK)
+        call get_basis_aug_cc_pvqz_dk(basis_data, element_number, ilast)
+      case (AUG_CC_PV5Z_DK)
+        call get_basis_aug_cc_pv5z_dk(basis_data, element_number, ilast)
 ```
 
 The main driver has defined constants for the basis sets we need, e.g. `STO-3G`
@@ -70,7 +70,7 @@ So the caller should be:
 ```
 ilast = 1
 do i = 1, n_elements
-  call get_sto_basis(basis_data, elements(i), STO-3G, ilast)
+  call load_basis(basis_data, elements(i), basis_set_to_load, ilast)
 end do 
 ```
 
