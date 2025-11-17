@@ -1,0 +1,1658 @@
+submodule (basis_driver) basis_driver_b_6_311gstar
+  implicit none
+
+contains
+
+  module subroutine get_basis_b_6_311gstar(basis_data, element_number, ilast)
+    type(basis_set_type), intent(out) :: basis_data
+    integer, intent(in) :: element_number
+    integer, intent(out) :: ilast
+    integer :: iw
+    logical :: maswrk
+    maswrk = .true.
+    iw = 6
+    ilast = 0
+
+    select case (element_number)
+
+      case(HYDROGEN)
+        basis_data%exponents(1) = 0.3386500D+02
+        basis_data%s_coef(1) = 0.2549380D-01
+        basis_data%exponents(2) = 0.5094790D+01
+        basis_data%s_coef(2) = 0.1903730D+00
+        basis_data%exponents(3) = 0.1158790D+01
+        basis_data%s_coef(3) = 0.8521610D+00
+        basis_data%exponents(4) = 0.3258400D+00
+        basis_data%s_coef(4) = 0.1000000D+01
+        basis_data%exponents(5) = 0.1027410D+00
+        basis_data%s_coef(5) = 0.1000000D+01
+        ilast = 5
+
+      case(HELIUM)
+        basis_data%exponents(1) = 0.9812430D+02
+        basis_data%s_coef(1) = 0.2874520D-01
+        basis_data%exponents(2) = 0.1476890D+02
+        basis_data%s_coef(2) = 0.2080610D+00
+        basis_data%exponents(3) = 0.3318830D+01
+        basis_data%s_coef(3) = 0.8376350D+00
+        basis_data%exponents(4) = 0.8740470D+00
+        basis_data%s_coef(4) = 0.1000000D+01
+        basis_data%exponents(5) = 0.2445640D+00
+        basis_data%s_coef(5) = 0.1000000D+01
+        ilast = 5
+
+      case(LITHIUM)
+        basis_data%exponents(1) = 0.9004600D+03
+        basis_data%s_coef(1) = 0.2287040D-02
+        basis_data%exponents(2) = 0.1344330D+03
+        basis_data%s_coef(2) = 0.1763500D-01
+        basis_data%exponents(3) = 0.3043650D+02
+        basis_data%s_coef(3) = 0.8734340D-01
+        basis_data%exponents(4) = 0.8626390D+01
+        basis_data%s_coef(4) = 0.2809770D+00
+        basis_data%exponents(5) = 0.2483320D+01
+        basis_data%s_coef(5) = 0.6587410D+00
+        basis_data%exponents(6) = 0.3031790D+00
+        basis_data%s_coef(6) = 0.1187120D+00
+        basis_data%exponents(7) = 0.4868900D+01
+        basis_data%s_coef(7) = 0.9332930D-01
+        basis_data%exponents(8) = 0.8569240D+00
+        basis_data%s_coef(8) = 0.9430450D+00
+        basis_data%exponents(9) = 0.2432270D+00
+        basis_data%s_coef(9) = -0.2798270D-02
+        basis_data%exponents(10) = 0.4868900D+01
+        basis_data%s_coef(10) = 0.3276610D-01
+        basis_data%exponents(11) = 0.8569240D+00
+        basis_data%s_coef(11) = 0.1597920D+00
+        basis_data%exponents(12) = 0.2432270D+00
+        basis_data%s_coef(12) = 0.8856670D+00
+        basis_data%exponents(13) = 0.6350700D-01
+        basis_data%s_coef(13) = 0.1000000D+01
+        basis_data%exponents(14) = 0.6350700D-01
+        basis_data%s_coef(14) = 0.1000000D+01
+        basis_data%exponents(15) = 0.2436830D-01
+        basis_data%s_coef(15) = 0.1000000D+01
+        basis_data%exponents(16) = 0.2436830D-01
+        basis_data%s_coef(16) = 0.1000000D+01
+        basis_data%exponents(17) = 0.2000000D+00
+        basis_data%d_coef(17) = 0.1000000D+01
+        ilast = 17
+
+      case(BERYLLIUM)
+        basis_data%exponents(1) = 0.1682800D+04
+        basis_data%s_coef(1) = 0.2285740D-02
+        basis_data%exponents(2) = 0.2517150D+03
+        basis_data%s_coef(2) = 0.1759380D-01
+        basis_data%exponents(3) = 0.5741160D+02
+        basis_data%s_coef(3) = 0.8633150D-01
+        basis_data%exponents(4) = 0.1651710D+02
+        basis_data%s_coef(4) = 0.2818350D+00
+        basis_data%exponents(5) = 0.4853640D+01
+        basis_data%s_coef(5) = 0.6405940D+00
+        basis_data%exponents(6) = 0.6268630D+00
+        basis_data%s_coef(6) = 0.1444670D+00
+        basis_data%exponents(7) = 0.8309380D+01
+        basis_data%s_coef(7) = 0.1086210D+00
+        basis_data%exponents(8) = 0.1740750D+01
+        basis_data%s_coef(8) = 0.9273010D+00
+        basis_data%exponents(9) = 0.4858160D+00
+        basis_data%s_coef(9) = -0.2971690D-02
+        basis_data%exponents(10) = 0.8309380D+01
+        basis_data%s_coef(10) = 0.3613440D-01
+        basis_data%exponents(11) = 0.1740750D+01
+        basis_data%s_coef(11) = 0.2169580D+00
+        basis_data%exponents(12) = 0.4858160D+00
+        basis_data%s_coef(12) = 0.8418390D+00
+        basis_data%exponents(13) = 0.1636130D+00
+        basis_data%s_coef(13) = 0.1000000D+01
+        basis_data%exponents(14) = 0.1636130D+00
+        basis_data%s_coef(14) = 0.1000000D+01
+        basis_data%exponents(15) = 0.5672850D-01
+        basis_data%s_coef(15) = 0.1000000D+01
+        basis_data%exponents(16) = 0.5672850D-01
+        basis_data%s_coef(16) = 0.1000000D+01
+        basis_data%exponents(17) = 0.2550000D+00
+        basis_data%d_coef(17) = 0.1000000D+01
+        ilast = 17
+
+      case(BORON)
+        basis_data%exponents(1) = 0.2858890D+04
+        basis_data%s_coef(1) = 0.2153750D-02
+        basis_data%exponents(2) = 0.4281400D+03
+        basis_data%s_coef(2) = 0.1658230D-01
+        basis_data%exponents(3) = 0.9752820D+02
+        basis_data%s_coef(3) = 0.8218700D-01
+        basis_data%exponents(4) = 0.2796930D+02
+        basis_data%s_coef(4) = 0.2766180D+00
+        basis_data%exponents(5) = 0.8215770D+01
+        basis_data%s_coef(5) = 0.6293160D+00
+        basis_data%exponents(6) = 0.1112780D+01
+        basis_data%s_coef(6) = 0.1737700D+00
+        basis_data%exponents(7) = 0.1324150D+02
+        basis_data%s_coef(7) = 0.1174430D+00
+        basis_data%exponents(8) = 0.3001660D+01
+        basis_data%s_coef(8) = 0.9180020D+00
+        basis_data%exponents(9) = 0.9128560D+00
+        basis_data%s_coef(9) = -0.2651050D-02
+        basis_data%exponents(10) = 0.1324150D+02
+        basis_data%s_coef(10) = 0.4181000D-01
+        basis_data%exponents(11) = 0.3001660D+01
+        basis_data%s_coef(11) = 0.2365750D+00
+        basis_data%exponents(12) = 0.9128560D+00
+        basis_data%s_coef(12) = 0.8162140D+00
+        basis_data%exponents(13) = 0.3154540D+00
+        basis_data%s_coef(13) = 0.1000000D+01
+        basis_data%exponents(14) = 0.3154540D+00
+        basis_data%s_coef(14) = 0.1000000D+01
+        basis_data%exponents(15) = 0.9885630D-01
+        basis_data%s_coef(15) = 0.1000000D+01
+        basis_data%exponents(16) = 0.9885630D-01
+        basis_data%s_coef(16) = 0.1000000D+01
+        basis_data%exponents(17) = 0.4010000D+00
+        basis_data%d_coef(17) = 0.1000000D+01
+        ilast = 17
+
+      case(CARBON)
+        basis_data%exponents(1) = 0.4563240D+04
+        basis_data%s_coef(1) = 0.1966650D-02
+        basis_data%exponents(2) = 0.6820240D+03
+        basis_data%s_coef(2) = 0.1523060D-01
+        basis_data%exponents(3) = 0.1549730D+03
+        basis_data%s_coef(3) = 0.7612690D-01
+        basis_data%exponents(4) = 0.4445530D+02
+        basis_data%s_coef(4) = 0.2608010D+00
+        basis_data%exponents(5) = 0.1302900D+02
+        basis_data%s_coef(5) = 0.6164620D+00
+        basis_data%exponents(6) = 0.1827730D+01
+        basis_data%s_coef(6) = 0.2210060D+00
+        basis_data%exponents(7) = 0.2096420D+02
+        basis_data%s_coef(7) = 0.1146600D+00
+        basis_data%exponents(8) = 0.4803310D+01
+        basis_data%s_coef(8) = 0.9199990D+00
+        basis_data%exponents(9) = 0.1459330D+01
+        basis_data%s_coef(9) = -0.3030680D-02
+        basis_data%exponents(10) = 0.2096420D+02
+        basis_data%s_coef(10) = 0.4024870D-01
+        basis_data%exponents(11) = 0.4803310D+01
+        basis_data%s_coef(11) = 0.2375940D+00
+        basis_data%exponents(12) = 0.1459330D+01
+        basis_data%s_coef(12) = 0.8158540D+00
+        basis_data%exponents(13) = 0.4834560D+00
+        basis_data%s_coef(13) = 0.1000000D+01
+        basis_data%exponents(14) = 0.4834560D+00
+        basis_data%s_coef(14) = 0.1000000D+01
+        basis_data%exponents(15) = 0.1455850D+00
+        basis_data%s_coef(15) = 0.1000000D+01
+        basis_data%exponents(16) = 0.1455850D+00
+        basis_data%s_coef(16) = 0.1000000D+01
+        basis_data%exponents(17) = 0.6260000D+00
+        basis_data%d_coef(17) = 0.1000000D+01
+        ilast = 17
+
+      case(NITROGEN)
+        basis_data%exponents(1) = 0.6293480D+04
+        basis_data%s_coef(1) = 0.1969790D-02
+        basis_data%exponents(2) = 0.9490440D+03
+        basis_data%s_coef(2) = 0.1496130D-01
+        basis_data%exponents(3) = 0.2187760D+03
+        basis_data%s_coef(3) = 0.7350060D-01
+        basis_data%exponents(4) = 0.6369160D+02
+        basis_data%s_coef(4) = 0.2489370D+00
+        basis_data%exponents(5) = 0.1882820D+02
+        basis_data%s_coef(5) = 0.6024600D+00
+        basis_data%exponents(6) = 0.2720230D+01
+        basis_data%s_coef(6) = 0.2562020D+00
+        basis_data%exponents(7) = 0.3063310D+02
+        basis_data%s_coef(7) = 0.1119060D+00
+        basis_data%exponents(8) = 0.7026140D+01
+        basis_data%s_coef(8) = 0.9216660D+00
+        basis_data%exponents(9) = 0.2112050D+01
+        basis_data%s_coef(9) = -0.2569190D-02
+        basis_data%exponents(10) = 0.3063310D+02
+        basis_data%s_coef(10) = 0.3831190D-01
+        basis_data%exponents(11) = 0.7026140D+01
+        basis_data%s_coef(11) = 0.2374030D+00
+        basis_data%exponents(12) = 0.2112050D+01
+        basis_data%s_coef(12) = 0.8175920D+00
+        basis_data%exponents(13) = 0.6840090D+00
+        basis_data%s_coef(13) = 0.1000000D+01
+        basis_data%exponents(14) = 0.6840090D+00
+        basis_data%s_coef(14) = 0.1000000D+01
+        basis_data%exponents(15) = 0.2008780D+00
+        basis_data%s_coef(15) = 0.1000000D+01
+        basis_data%exponents(16) = 0.2008780D+00
+        basis_data%s_coef(16) = 0.1000000D+01
+        basis_data%exponents(17) = 0.9130000D+00
+        basis_data%d_coef(17) = 0.1000000D+01
+        ilast = 17
+
+      case(OXYGEN)
+        basis_data%exponents(1) = 0.8588500D+04
+        basis_data%s_coef(1) = 0.1895150D-02
+        basis_data%exponents(2) = 0.1297230D+04
+        basis_data%s_coef(2) = 0.1438590D-01
+        basis_data%exponents(3) = 0.2992960D+03
+        basis_data%s_coef(3) = 0.7073200D-01
+        basis_data%exponents(4) = 0.8737710D+02
+        basis_data%s_coef(4) = 0.2400010D+00
+        basis_data%exponents(5) = 0.2567890D+02
+        basis_data%s_coef(5) = 0.5947970D+00
+        basis_data%exponents(6) = 0.3740040D+01
+        basis_data%s_coef(6) = 0.2808020D+00
+        basis_data%exponents(7) = 0.4211750D+02
+        basis_data%s_coef(7) = 0.1138890D+00
+        basis_data%exponents(8) = 0.9628370D+01
+        basis_data%s_coef(8) = 0.9208110D+00
+        basis_data%exponents(9) = 0.2853320D+01
+        basis_data%s_coef(9) = -0.3274470D-02
+        basis_data%exponents(10) = 0.4211750D+02
+        basis_data%s_coef(10) = 0.3651140D-01
+        basis_data%exponents(11) = 0.9628370D+01
+        basis_data%s_coef(11) = 0.2371530D+00
+        basis_data%exponents(12) = 0.2853320D+01
+        basis_data%s_coef(12) = 0.8197020D+00
+        basis_data%exponents(13) = 0.9056610D+00
+        basis_data%s_coef(13) = 0.1000000D+01
+        basis_data%exponents(14) = 0.9056610D+00
+        basis_data%s_coef(14) = 0.1000000D+01
+        basis_data%exponents(15) = 0.2556110D+00
+        basis_data%s_coef(15) = 0.1000000D+01
+        basis_data%exponents(16) = 0.2556110D+00
+        basis_data%s_coef(16) = 0.1000000D+01
+        basis_data%exponents(17) = 0.1292000D+01
+        basis_data%d_coef(17) = 0.1000000D+01
+        ilast = 17
+
+      case(FLUORINE)
+        basis_data%exponents(1) = 0.1142710D+05
+        basis_data%s_coef(1) = 0.1800930D-02
+        basis_data%exponents(2) = 0.1722350D+04
+        basis_data%s_coef(2) = 0.1374190D-01
+        basis_data%exponents(3) = 0.3957460D+03
+        basis_data%s_coef(3) = 0.6813340D-01
+        basis_data%exponents(4) = 0.1151390D+03
+        basis_data%s_coef(4) = 0.2333250D+00
+        basis_data%exponents(5) = 0.3360260D+02
+        basis_data%s_coef(5) = 0.5890860D+00
+        basis_data%exponents(6) = 0.4919010D+01
+        basis_data%s_coef(6) = 0.2995050D+00
+        basis_data%exponents(7) = 0.5544410D+02
+        basis_data%s_coef(7) = 0.1145360D+00
+        basis_data%exponents(8) = 0.1263230D+02
+        basis_data%s_coef(8) = 0.9205120D+00
+        basis_data%exponents(9) = 0.3717560D+01
+        basis_data%s_coef(9) = -0.3378040D-02
+        basis_data%exponents(10) = 0.5544410D+02
+        basis_data%s_coef(10) = 0.3546090D-01
+        basis_data%exponents(11) = 0.1263230D+02
+        basis_data%s_coef(11) = 0.2374510D+00
+        basis_data%exponents(12) = 0.3717560D+01
+        basis_data%s_coef(12) = 0.8204580D+00
+        basis_data%exponents(13) = 0.1165450D+01
+        basis_data%s_coef(13) = 0.1000000D+01
+        basis_data%exponents(14) = 0.1165450D+01
+        basis_data%s_coef(14) = 0.1000000D+01
+        basis_data%exponents(15) = 0.3218920D+00
+        basis_data%s_coef(15) = 0.1000000D+01
+        basis_data%exponents(16) = 0.3218920D+00
+        basis_data%s_coef(16) = 0.1000000D+01
+        basis_data%exponents(17) = 0.1750000D+01
+        basis_data%d_coef(17) = 0.1000000D+01
+        ilast = 17
+
+      case(NEON)
+        basis_data%exponents(1) = 0.1399570D+05
+        basis_data%s_coef(1) = 0.1832760D-02
+        basis_data%exponents(2) = 0.2117100D+04
+        basis_data%s_coef(2) = 0.1388270D-01
+        basis_data%exponents(3) = 0.4904250D+03
+        basis_data%s_coef(3) = 0.6806870D-01
+        basis_data%exponents(4) = 0.1438330D+03
+        basis_data%s_coef(4) = 0.2313280D+00
+        basis_data%exponents(5) = 0.4192650D+02
+        basis_data%s_coef(5) = 0.5858900D+00
+        basis_data%exponents(6) = 0.6156840D+01
+        basis_data%s_coef(6) = 0.3058830D+00
+        basis_data%exponents(7) = 0.6912110D+02
+        basis_data%s_coef(7) = 0.1191490D+00
+        basis_data%exponents(8) = 0.1583500D+02
+        basis_data%s_coef(8) = 0.9173750D+00
+        basis_data%exponents(9) = 0.4673260D+01
+        basis_data%s_coef(9) = -0.4058390D-02
+        basis_data%exponents(10) = 0.6912110D+02
+        basis_data%s_coef(10) = 0.3565740D-01
+        basis_data%exponents(11) = 0.1583500D+02
+        basis_data%s_coef(11) = 0.2394770D+00
+        basis_data%exponents(12) = 0.4673260D+01
+        basis_data%s_coef(12) = 0.8184610D+00
+        basis_data%exponents(13) = 0.1457560D+01
+        basis_data%s_coef(13) = 0.1000000D+01
+        basis_data%exponents(14) = 0.1457560D+01
+        basis_data%s_coef(14) = 0.1000000D+01
+        basis_data%exponents(15) = 0.3970570D+00
+        basis_data%s_coef(15) = 0.1000000D+01
+        basis_data%exponents(16) = 0.3970570D+00
+        basis_data%s_coef(16) = 0.1000000D+01
+        basis_data%exponents(17) = 0.2304000D+01
+        basis_data%d_coef(17) = 0.1000000D+01
+        ilast = 17
+
+      case(SODIUM)
+        basis_data%exponents(1) = 0.3616640D+05
+        basis_data%s_coef(1) = 0.1032000D-02
+        basis_data%exponents(2) = 0.5372580D+04
+        basis_data%s_coef(2) = 0.8071000D-02
+        basis_data%exponents(3) = 0.1213210D+04
+        basis_data%s_coef(3) = 0.4212900D-01
+        basis_data%exponents(4) = 0.3396230D+03
+        basis_data%s_coef(4) = 0.1697890D+00
+        basis_data%exponents(5) = 0.1095530D+03
+        basis_data%s_coef(5) = 0.5146210D+00
+        basis_data%exponents(6) = 0.3877730D+02
+        basis_data%s_coef(6) = 0.3798170D+00
+        basis_data%exponents(7) = 0.3877730D+02
+        basis_data%s_coef(7) = 0.3747620D+00
+        basis_data%exponents(8) = 0.1457590D+02
+        basis_data%s_coef(8) = 0.5757690D+00
+        basis_data%exponents(9) = 0.5269930D+01
+        basis_data%s_coef(9) = 0.1129330D+00
+        basis_data%exponents(10) = 0.1827770D+01
+        basis_data%s_coef(10) = 0.1000000D+01
+        basis_data%exponents(11) = 0.6199480D+00
+        basis_data%s_coef(11) = 0.1000000D+01
+        basis_data%exponents(12) = 0.5724000D-01
+        basis_data%s_coef(12) = 0.1000000D+01
+        basis_data%exponents(13) = 0.2404800D-01
+        basis_data%s_coef(13) = 0.1000000D+01
+        basis_data%exponents(14) = 0.1446450D+03
+        basis_data%p_coef(14) = 0.1148500D-01
+        basis_data%exponents(15) = 0.3390740D+02
+        basis_data%p_coef(15) = 0.8238300D-01
+        basis_data%exponents(16) = 0.1062850D+02
+        basis_data%p_coef(16) = 0.3196580D+00
+        basis_data%exponents(17) = 0.3823890D+01
+        basis_data%p_coef(17) = 0.7012950D+00
+        basis_data%exponents(18) = 0.1444290D+01
+        basis_data%p_coef(18) = 0.6385060D+00
+        basis_data%exponents(19) = 0.5526210D+00
+        basis_data%p_coef(19) = 0.4253650D+00
+        basis_data%exponents(20) = 0.1887200D+00
+        basis_data%p_coef(20) = 0.1000000D+01
+        basis_data%exponents(21) = 0.4650100D-01
+        basis_data%p_coef(21) = 0.1000000D+01
+        basis_data%exponents(22) = 0.1628500D-01
+        basis_data%p_coef(22) = 0.1000000D+01
+        basis_data%exponents(23) = 0.1750000D+00
+        basis_data%d_coef(23) = 0.1000000D+01
+        ilast = 23
+
+      case(MAGNESIUM)
+        basis_data%exponents(1) = 0.4386650D+05
+        basis_data%s_coef(1) = 0.9180000D-03
+        basis_data%exponents(2) = 0.6605370D+04
+        basis_data%s_coef(2) = 0.7047000D-02
+        basis_data%exponents(3) = 0.1513260D+04
+        basis_data%s_coef(3) = 0.3594100D-01
+        basis_data%exponents(4) = 0.4323170D+03
+        basis_data%s_coef(4) = 0.1414610D+00
+        basis_data%exponents(5) = 0.1421490D+03
+        basis_data%s_coef(5) = 0.4267640D+00
+        basis_data%exponents(6) = 0.5139830D+02
+        basis_data%s_coef(6) = 0.4979750D+00
+        basis_data%exponents(7) = 0.5139830D+02
+        basis_data%s_coef(7) = 0.2513550D+00
+        basis_data%exponents(8) = 0.1991960D+02
+        basis_data%s_coef(8) = 0.6186710D+00
+        basis_data%exponents(9) = 0.8024740D+01
+        basis_data%s_coef(9) = 0.1884170D+00
+        basis_data%exponents(10) = 0.2508170D+01
+        basis_data%s_coef(10) = 0.1000000D+01
+        basis_data%exponents(11) = 0.8715310D+00
+        basis_data%s_coef(11) = 0.1000000D+01
+        basis_data%exponents(12) = 0.1081880D+00
+        basis_data%s_coef(12) = 0.1000000D+01
+        basis_data%exponents(13) = 0.4013000D-01
+        basis_data%s_coef(13) = 0.1000000D+01
+        basis_data%exponents(14) = 0.1938540D+03
+        basis_data%p_coef(14) = 0.1018800D-01
+        basis_data%exponents(15) = 0.4544200D+02
+        basis_data%p_coef(15) = 0.7536000D-01
+        basis_data%exponents(16) = 0.1418640D+02
+        basis_data%p_coef(16) = 0.3074190D+00
+        basis_data%exponents(17) = 0.5057510D+01
+        basis_data%p_coef(17) = 0.7175750D+00
+        basis_data%exponents(18) = 0.1888610D+01
+        basis_data%p_coef(18) = 0.6673390D+00
+        basis_data%exponents(19) = 0.7226520D+00
+        basis_data%p_coef(19) = 0.3946490D+00
+        basis_data%exponents(20) = 0.2364170D+00
+        basis_data%p_coef(20) = 0.1000000D+01
+        basis_data%exponents(21) = 0.9335800D-01
+        basis_data%p_coef(21) = 0.1000000D+01
+        basis_data%exponents(22) = 0.3480900D-01
+        basis_data%p_coef(22) = 0.1000000D+01
+        basis_data%exponents(23) = 0.1750000D+00
+        basis_data%d_coef(23) = 0.1000000D+01
+        ilast = 23
+
+      case(ALUMINUM)
+        basis_data%exponents(1) = 0.5486649D+05
+        basis_data%s_coef(1) = 0.8390000D-03
+        basis_data%exponents(2) = 0.8211766D+04
+        basis_data%s_coef(2) = 0.6527000D-02
+        basis_data%exponents(3) = 0.1866176D+04
+        basis_data%s_coef(3) = 0.3366600D-01
+        basis_data%exponents(4) = 0.5311293D+03
+        basis_data%s_coef(4) = 0.1329020D+00
+        basis_data%exponents(5) = 0.1751180D+03
+        basis_data%s_coef(5) = 0.4012660D+00
+        basis_data%exponents(6) = 0.6400550D+02
+        basis_data%s_coef(6) = 0.5313380D+00
+        basis_data%exponents(7) = 0.6400550D+02
+        basis_data%s_coef(7) = 0.2023050D+00
+        basis_data%exponents(8) = 0.2529251D+02
+        basis_data%s_coef(8) = 0.6247900D+00
+        basis_data%exponents(9) = 0.1053491D+02
+        basis_data%s_coef(9) = 0.2274390D+00
+        basis_data%exponents(10) = 0.3206711D+01
+        basis_data%s_coef(10) = 0.1000000D+01
+        basis_data%exponents(11) = 0.1152555D+01
+        basis_data%s_coef(11) = 0.1000000D+01
+        basis_data%exponents(12) = 0.1766780D+00
+        basis_data%s_coef(12) = 0.1000000D+01
+        basis_data%exponents(13) = 0.6523700D-01
+        basis_data%s_coef(13) = 0.1000000D+01
+        basis_data%exponents(14) = 0.2592836D+03
+        basis_data%p_coef(14) = 0.9448000D-02
+        basis_data%exponents(15) = 0.6107687D+02
+        basis_data%p_coef(15) = 0.7097400D-01
+        basis_data%exponents(16) = 0.1930324D+02
+        basis_data%p_coef(16) = 0.2956360D+00
+        basis_data%exponents(17) = 0.7010882D+01
+        basis_data%p_coef(17) = 0.7282190D+00
+        basis_data%exponents(18) = 0.2673865D+01
+        basis_data%p_coef(18) = 0.6444670D+00
+        basis_data%exponents(19) = 0.1036596D+01
+        basis_data%p_coef(19) = 0.4174130D+00
+        basis_data%exponents(20) = 0.3168190D+00
+        basis_data%p_coef(20) = 0.1000000D+01
+        basis_data%exponents(21) = 0.1142570D+00
+        basis_data%p_coef(21) = 0.1000000D+01
+        basis_data%exponents(22) = 0.4139700D-01
+        basis_data%p_coef(22) = 0.1000000D+01
+        basis_data%exponents(23) = 0.3250000D+00
+        basis_data%d_coef(23) = 0.1000000D+01
+        ilast = 23
+
+      case(SILICON)
+        basis_data%exponents(1) = 0.6937923D+05
+        basis_data%s_coef(1) = 0.7570000D-03
+        basis_data%exponents(2) = 0.1035494D+05
+        basis_data%s_coef(2) = 0.5932000D-02
+        basis_data%exponents(3) = 0.2333880D+04
+        basis_data%s_coef(3) = 0.3108800D-01
+        basis_data%exponents(4) = 0.6571430D+03
+        basis_data%s_coef(4) = 0.1249670D+00
+        basis_data%exponents(5) = 0.2143011D+03
+        basis_data%s_coef(5) = 0.3868970D+00
+        basis_data%exponents(6) = 0.7762917D+02
+        basis_data%s_coef(6) = 0.5548880D+00
+        basis_data%exponents(7) = 0.7762917D+02
+        basis_data%s_coef(7) = 0.1778810D+00
+        basis_data%exponents(8) = 0.3063081D+02
+        basis_data%s_coef(8) = 0.6277650D+00
+        basis_data%exponents(9) = 0.1280129D+02
+        basis_data%s_coef(9) = 0.2476230D+00
+        basis_data%exponents(10) = 0.3926866D+01
+        basis_data%s_coef(10) = 0.1000000D+01
+        basis_data%exponents(11) = 0.1452343D+01
+        basis_data%s_coef(11) = 0.1000000D+01
+        basis_data%exponents(12) = 0.2562340D+00
+        basis_data%s_coef(12) = 0.1000000D+01
+        basis_data%exponents(13) = 0.9427900D-01
+        basis_data%s_coef(13) = 0.1000000D+01
+        basis_data%exponents(14) = 0.3354832D+03
+        basis_data%p_coef(14) = 0.8866000D-02
+        basis_data%exponents(15) = 0.7890037D+02
+        basis_data%p_coef(15) = 0.6829900D-01
+        basis_data%exponents(16) = 0.2498815D+02
+        basis_data%p_coef(16) = 0.2909580D+00
+        basis_data%exponents(17) = 0.9219711D+01
+        basis_data%p_coef(17) = 0.7321170D+00
+        basis_data%exponents(18) = 0.3621140D+01
+        basis_data%p_coef(18) = 0.6198790D+00
+        basis_data%exponents(19) = 0.1451310D+01
+        basis_data%p_coef(19) = 0.4391480D+00
+        basis_data%exponents(20) = 0.5049770D+00
+        basis_data%p_coef(20) = 0.1000000D+01
+        basis_data%exponents(21) = 0.1863170D+00
+        basis_data%p_coef(21) = 0.1000000D+01
+        basis_data%exponents(22) = 0.6543200D-01
+        basis_data%p_coef(22) = 0.1000000D+01
+        basis_data%exponents(23) = 0.4500000D+00
+        basis_data%d_coef(23) = 0.1000000D+01
+        ilast = 23
+
+      case(PHOSPHORUS)
+        basis_data%exponents(1) = 0.7749240D+05
+        basis_data%s_coef(1) = 0.7810000D-03
+        basis_data%exponents(2) = 0.1160580D+05
+        basis_data%s_coef(2) = 0.6068000D-02
+        basis_data%exponents(3) = 0.2645960D+04
+        basis_data%s_coef(3) = 0.3116000D-01
+        basis_data%exponents(4) = 0.7549760D+03
+        basis_data%s_coef(4) = 0.1234310D+00
+        basis_data%exponents(5) = 0.2487550D+03
+        basis_data%s_coef(5) = 0.3782090D+00
+        basis_data%exponents(6) = 0.9115650D+02
+        basis_data%s_coef(6) = 0.5632620D+00
+        basis_data%exponents(7) = 0.9115650D+02
+        basis_data%s_coef(7) = 0.1602550D+00
+        basis_data%exponents(8) = 0.3622570D+02
+        basis_data%s_coef(8) = 0.6276470D+00
+        basis_data%exponents(9) = 0.1521130D+02
+        basis_data%s_coef(9) = 0.2638490D+00
+        basis_data%exponents(10) = 0.4794170D+01
+        basis_data%s_coef(10) = 0.1000000D+01
+        basis_data%exponents(11) = 0.1807930D+01
+        basis_data%s_coef(11) = 0.1000000D+01
+        basis_data%exponents(12) = 0.3568160D+00
+        basis_data%s_coef(12) = 0.1000000D+01
+        basis_data%exponents(13) = 0.1147830D+00
+        basis_data%s_coef(13) = 0.1000000D+01
+        basis_data%exponents(14) = 0.3848430D+03
+        basis_data%p_coef(14) = 0.9206000D-02
+        basis_data%exponents(15) = 0.9055210D+02
+        basis_data%p_coef(15) = 0.6987400D-01
+        basis_data%exponents(16) = 0.2913390D+02
+        basis_data%p_coef(16) = 0.2924700D+00
+        basis_data%exponents(17) = 0.1088620D+02
+        basis_data%p_coef(17) = 0.7281030D+00
+        basis_data%exponents(18) = 0.4352590D+01
+        basis_data%p_coef(18) = 0.6283490D+00
+        basis_data%exponents(19) = 0.1777060D+01
+        basis_data%p_coef(19) = 0.4280440D+00
+        basis_data%exponents(20) = 0.6970050D+00
+        basis_data%p_coef(20) = 0.1000000D+01
+        basis_data%exponents(21) = 0.2535320D+00
+        basis_data%p_coef(21) = 0.1000000D+01
+        basis_data%exponents(22) = 0.6849300D-01
+        basis_data%p_coef(22) = 0.1000000D+01
+        basis_data%exponents(23) = 0.5500000D+00
+        basis_data%d_coef(23) = 0.1000000D+01
+        ilast = 23
+
+      case(SULFUR)
+        basis_data%exponents(1) = 0.9341340D+05
+        basis_data%s_coef(1) = 0.7430000D-03
+        basis_data%exponents(2) = 0.1396170D+05
+        basis_data%s_coef(2) = 0.5793000D-02
+        basis_data%exponents(3) = 0.3169910D+04
+        basis_data%s_coef(3) = 0.2995400D-01
+        basis_data%exponents(4) = 0.9024560D+03
+        basis_data%s_coef(4) = 0.1190280D+00
+        basis_data%exponents(5) = 0.2971580D+03
+        basis_data%s_coef(5) = 0.3684320D+00
+        basis_data%exponents(6) = 0.1087020D+03
+        basis_data%s_coef(6) = 0.5772990D+00
+        basis_data%exponents(7) = 0.1087020D+03
+        basis_data%s_coef(7) = 0.1431860D+00
+        basis_data%exponents(8) = 0.4315530D+02
+        basis_data%s_coef(8) = 0.6244650D+00
+        basis_data%exponents(9) = 0.1810790D+02
+        basis_data%s_coef(9) = 0.2833660D+00
+        basis_data%exponents(10) = 0.5560090D+01
+        basis_data%s_coef(10) = 0.1000000D+01
+        basis_data%exponents(11) = 0.2131830D+01
+        basis_data%s_coef(11) = 0.1000000D+01
+        basis_data%exponents(12) = 0.4204030D+00
+        basis_data%s_coef(12) = 0.1000000D+01
+        basis_data%exponents(13) = 0.1360450D+00
+        basis_data%s_coef(13) = 0.1000000D+01
+        basis_data%exponents(14) = 0.4950400D+03
+        basis_data%p_coef(14) = 0.8309000D-02
+        basis_data%exponents(15) = 0.1172210D+03
+        basis_data%p_coef(15) = 0.6402400D-01
+        basis_data%exponents(16) = 0.3777490D+02
+        basis_data%p_coef(16) = 0.2776140D+00
+        basis_data%exponents(17) = 0.1405840D+02
+        basis_data%p_coef(17) = 0.7450760D+00
+        basis_data%exponents(18) = 0.5565740D+01
+        basis_data%p_coef(18) = 0.6137120D+00
+        basis_data%exponents(19) = 0.2262970D+01
+        basis_data%p_coef(19) = 0.4438180D+00
+        basis_data%exponents(20) = 0.8079940D+00
+        basis_data%p_coef(20) = 0.1000000D+01
+        basis_data%exponents(21) = 0.2774600D+00
+        basis_data%p_coef(21) = 0.1000000D+01
+        basis_data%exponents(22) = 0.7714100D-01
+        basis_data%p_coef(22) = 0.1000000D+01
+        basis_data%exponents(23) = 0.6500000D+00
+        basis_data%d_coef(23) = 0.1000000D+01
+        ilast = 23
+
+      case(CHLORINE)
+        basis_data%exponents(1) = 0.1058190D+06
+        basis_data%s_coef(1) = 0.7380000D-03
+        basis_data%exponents(2) = 0.1587200D+05
+        basis_data%s_coef(2) = 0.5718000D-02
+        basis_data%exponents(3) = 0.3619650D+04
+        basis_data%s_coef(3) = 0.2949500D-01
+        basis_data%exponents(4) = 0.1030800D+04
+        basis_data%s_coef(4) = 0.1172860D+00
+        basis_data%exponents(5) = 0.3399080D+03
+        basis_data%s_coef(5) = 0.3629490D+00
+        basis_data%exponents(6) = 0.1245380D+03
+        basis_data%s_coef(6) = 0.5841490D+00
+        basis_data%exponents(7) = 0.1245380D+03
+        basis_data%s_coef(7) = 0.1341770D+00
+        basis_data%exponents(8) = 0.4951350D+02
+        basis_data%s_coef(8) = 0.6242500D+00
+        basis_data%exponents(9) = 0.2080560D+02
+        basis_data%s_coef(9) = 0.2917560D+00
+        basis_data%exponents(10) = 0.6583460D+01
+        basis_data%s_coef(10) = 0.1000000D+01
+        basis_data%exponents(11) = 0.2564680D+01
+        basis_data%s_coef(11) = 0.1000000D+01
+        basis_data%exponents(12) = 0.5597630D+00
+        basis_data%s_coef(12) = 0.1000000D+01
+        basis_data%exponents(13) = 0.1832730D+00
+        basis_data%s_coef(13) = 0.1000000D+01
+        basis_data%exponents(14) = 0.5897760D+03
+        basis_data%p_coef(14) = 0.2391000D-02
+        basis_data%exponents(15) = 0.1398490D+03
+        basis_data%p_coef(15) = 0.1850400D-01
+        basis_data%exponents(16) = 0.4514130D+02
+        basis_data%p_coef(16) = 0.8137700D-01
+        basis_data%exponents(17) = 0.1687330D+02
+        basis_data%p_coef(17) = 0.2215520D+00
+        basis_data%exponents(18) = 0.6741100D+01
+        basis_data%p_coef(18) = 0.7725690D+00
+        basis_data%exponents(19) = 0.6741100D+01
+        basis_data%p_coef(19) = -0.1572244D+01
+        basis_data%exponents(20) = 0.2771520D+01
+        basis_data%p_coef(20) = 0.9923890D+00
+        basis_data%exponents(21) = 0.1023870D+01
+        basis_data%p_coef(21) = 0.1000000D+01
+        basis_data%exponents(22) = 0.3813680D+00
+        basis_data%p_coef(22) = 0.1000000D+01
+        basis_data%exponents(23) = 0.1094370D+00
+        basis_data%p_coef(23) = 0.1000000D+01
+        basis_data%exponents(24) = 0.7500000D+00
+        basis_data%d_coef(24) = 0.1000000D+01
+        ilast = 24
+
+      case(ARGON)
+        basis_data%exponents(1) = 0.1180224D+06
+        basis_data%s_coef(1) = 0.7470000D-03
+        basis_data%exponents(2) = 0.1768354D+05
+        basis_data%s_coef(2) = 0.5790000D-02
+        basis_data%exponents(3) = 0.4027766D+04
+        basis_data%s_coef(3) = 0.2991900D-01
+        basis_data%exponents(4) = 0.1145398D+04
+        basis_data%s_coef(4) = 0.1192060D+00
+        basis_data%exponents(5) = 0.3771638D+03
+        basis_data%s_coef(5) = 0.3690280D+00
+        basis_data%exponents(6) = 0.1381597D+03
+        basis_data%s_coef(6) = 0.5764590D+00
+        basis_data%exponents(7) = 0.1381597D+03
+        basis_data%s_coef(7) = 0.1439270D+00
+        basis_data%exponents(8) = 0.5498912D+02
+        basis_data%s_coef(8) = 0.6229380D+00
+        basis_data%exponents(9) = 0.2317067D+02
+        basis_data%s_coef(9) = 0.2839640D+00
+        basis_data%exponents(10) = 0.7377860D+01
+        basis_data%s_coef(10) = 0.1000000D+01
+        basis_data%exponents(11) = 0.2923688D+01
+        basis_data%s_coef(11) = 0.1000000D+01
+        basis_data%exponents(12) = 0.6504050D+00
+        basis_data%s_coef(12) = 0.1000000D+01
+        basis_data%exponents(13) = 0.2328250D+00
+        basis_data%s_coef(13) = 0.1000000D+01
+        basis_data%exponents(14) = 0.6630620D+03
+        basis_data%p_coef(14) = 0.3082000D-02
+        basis_data%exponents(15) = 0.1570928D+03
+        basis_data%p_coef(15) = 0.2416500D-01
+        basis_data%exponents(16) = 0.5023110D+02
+        basis_data%p_coef(16) = 0.1082230D+00
+        basis_data%exponents(17) = 0.1863535D+02
+        basis_data%p_coef(17) = 0.2941920D+00
+        basis_data%exponents(18) = 0.7446537D+01
+        basis_data%p_coef(18) = 0.6878620D+00
+        basis_data%exponents(19) = 0.7446537D+01
+        basis_data%p_coef(19) = -0.1214482D+00
+        basis_data%exponents(20) = 0.3095698D+01
+        basis_data%p_coef(20) = 0.1632370D+00
+        basis_data%exponents(21) = 0.1106463D+01
+        basis_data%p_coef(21) = 0.1000000D+01
+        basis_data%exponents(22) = 0.4156010D+00
+        basis_data%p_coef(22) = 0.1000000D+01
+        basis_data%exponents(23) = 0.1454490D+00
+        basis_data%p_coef(23) = 0.1000000D+01
+        basis_data%exponents(24) = 0.8500000D+00
+        basis_data%d_coef(24) = 0.1000000D+01
+        ilast = 24
+
+      case(POTASSIUM)
+        basis_data%exponents(1) = 0.1825940D+06
+        basis_data%s_coef(1) = 0.2277470D-03
+        basis_data%exponents(2) = 0.2736900D+05
+        basis_data%s_coef(2) = 0.1766400D-02
+        basis_data%exponents(3) = 0.6229170D+04
+        basis_data%s_coef(3) = 0.9194970D-02
+        basis_data%exponents(4) = 0.1764580D+04
+        basis_data%s_coef(4) = 0.3745510D-01
+        basis_data%exponents(5) = 0.5770510D+03
+        basis_data%s_coef(5) = 0.1220450D+00
+        basis_data%exponents(6) = 0.2102490D+03
+        basis_data%s_coef(6) = 0.2989900D+00
+        basis_data%exponents(7) = 0.8261780D+02
+        basis_data%s_coef(7) = 0.4051470D+00
+        basis_data%exponents(8) = 0.3323320D+02
+        basis_data%s_coef(8) = 0.2925320D+00
+        basis_data%exponents(9) = 0.8106490D+01
+        basis_data%s_coef(9) = 0.1000000D+01
+        basis_data%exponents(10) = 0.3334030D+01
+        basis_data%s_coef(10) = 0.1000000D+01
+        basis_data%exponents(11) = 0.8455440D+00
+        basis_data%s_coef(11) = 0.1000000D+01
+        basis_data%exponents(12) = 0.3282160D+00
+        basis_data%s_coef(12) = 0.1000000D+01
+        basis_data%exponents(13) = 0.3640350D-01
+        basis_data%s_coef(13) = 0.1000000D+01
+        basis_data%exponents(14) = 0.1764630D-01
+        basis_data%s_coef(14) = 0.1000000D+01
+        basis_data%exponents(15) = 0.8910540D+03
+        basis_data%p_coef(15) = 0.2184290D-02
+        basis_data%exponents(16) = 0.2110160D+03
+        basis_data%p_coef(16) = 0.1758910D-01
+        basis_data%exponents(17) = 0.6767140D+02
+        basis_data%p_coef(17) = 0.8177750D-01
+        basis_data%exponents(18) = 0.2527150D+02
+        basis_data%p_coef(18) = 0.2456560D+00
+        basis_data%exponents(19) = 0.1013900D+02
+        basis_data%p_coef(19) = 0.4339840D+00
+        basis_data%exponents(20) = 0.4201860D+01
+        basis_data%p_coef(20) = 0.3623770D+00
+        basis_data%exponents(21) = 0.1625070D+01
+        basis_data%p_coef(21) = 0.1000000D+01
+        basis_data%exponents(22) = 0.6437700D+00
+        basis_data%p_coef(22) = 0.1000000D+01
+        basis_data%exponents(23) = 0.2461300D+00
+        basis_data%p_coef(23) = 0.1000000D+01
+        basis_data%exponents(24) = 0.4544000D-01
+        basis_data%p_coef(24) = 0.1000000D+01
+        basis_data%exponents(25) = 0.1616000D-01
+        basis_data%p_coef(25) = 0.1000000D+01
+        basis_data%exponents(26) = 0.1337000D+02
+        basis_data%d_coef(26) = 0.3160160D-01
+        basis_data%exponents(27) = 0.3421000D+01
+        basis_data%d_coef(27) = 0.1568790D+00
+        basis_data%exponents(28) = 0.1063000D+01
+        basis_data%d_coef(28) = 0.3905820D+00
+        basis_data%exponents(29) = 0.2290000D+00
+        basis_data%d_coef(29) = 0.1000000D+01
+        ilast = 29
+
+      case(CALCIUM)
+        basis_data%exponents(1) = 0.2026990D+06
+        basis_data%s_coef(1) = 0.2229640D-03
+        basis_data%exponents(2) = 0.3038250D+05
+        basis_data%s_coef(2) = 0.1729320D-02
+        basis_data%exponents(3) = 0.6915080D+04
+        basis_data%s_coef(3) = 0.9002260D-02
+        basis_data%exponents(4) = 0.1959020D+04
+        basis_data%s_coef(4) = 0.3666990D-01
+        basis_data%exponents(5) = 0.6409360D+03
+        basis_data%s_coef(5) = 0.1194100D+00
+        basis_data%exponents(6) = 0.2339770D+03
+        basis_data%s_coef(6) = 0.2918250D+00
+        basis_data%exponents(7) = 0.9228920D+02
+        basis_data%s_coef(7) = 0.4044150D+00
+        basis_data%exponents(8) = 0.3725450D+02
+        basis_data%s_coef(8) = 0.2963130D+00
+        basis_data%exponents(9) = 0.9131980D+01
+        basis_data%s_coef(9) = 0.1000000D+01
+        basis_data%exponents(10) = 0.3817790D+01
+        basis_data%s_coef(10) = 0.1000000D+01
+        basis_data%exponents(11) = 0.1049350D+01
+        basis_data%s_coef(11) = 0.1000000D+01
+        basis_data%exponents(12) = 0.4286600D+00
+        basis_data%s_coef(12) = 0.1000000D+01
+        basis_data%exponents(13) = 0.6282260D-01
+        basis_data%s_coef(13) = 0.1000000D+01
+        basis_data%exponents(14) = 0.2601620D-01
+        basis_data%s_coef(14) = 0.1000000D+01
+        basis_data%exponents(15) = 0.1019760D+04
+        basis_data%p_coef(15) = 0.2059860D-02
+        basis_data%exponents(16) = 0.2415960D+03
+        basis_data%p_coef(16) = 0.1665010D-01
+        basis_data%exponents(17) = 0.7763700D+02
+        basis_data%p_coef(17) = 0.7776460D-01
+        basis_data%exponents(18) = 0.2911540D+02
+        basis_data%p_coef(18) = 0.2418060D+00
+        basis_data%exponents(19) = 0.1176260D+02
+        basis_data%p_coef(19) = 0.4325780D+00
+        basis_data%exponents(20) = 0.4922890D+01
+        basis_data%p_coef(20) = 0.3673250D+00
+        basis_data%exponents(21) = 0.1906450D+01
+        basis_data%p_coef(21) = 0.1000000D+01
+        basis_data%exponents(22) = 0.7369000D+00
+        basis_data%p_coef(22) = 0.1000000D+01
+        basis_data%exponents(23) = 0.2764200D+00
+        basis_data%p_coef(23) = 0.1000000D+01
+        basis_data%exponents(24) = 0.6027000D-01
+        basis_data%p_coef(24) = 0.1000000D+01
+        basis_data%exponents(25) = 0.1791000D-01
+        basis_data%p_coef(25) = 0.1000000D+01
+        basis_data%exponents(26) = 0.1508000D+02
+        basis_data%d_coef(26) = 0.3689470D-01
+        basis_data%exponents(27) = 0.3926000D+01
+        basis_data%d_coef(27) = 0.1778200D+00
+        basis_data%exponents(28) = 0.1233000D+01
+        basis_data%d_coef(28) = 0.4255130D+00
+        basis_data%exponents(29) = 0.2600000D+00
+        basis_data%d_coef(29) = 0.1000000D+01
+        ilast = 29
+
+      case(SCANDIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element SCANDIUM'
+        ilast = -1
+        return
+
+      case(TITANIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element TITANIUM'
+        ilast = -1
+        return
+
+      case(VANADIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element VANADIUM'
+        ilast = -1
+        return
+
+      case(CHROMIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element CHROMIUM'
+        ilast = -1
+        return
+
+      case(MANGANESE)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element MANGANESE'
+        ilast = -1
+        return
+
+      case(IRON)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element IRON'
+        ilast = -1
+        return
+
+      case(COBALT)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element COBALT'
+        ilast = -1
+        return
+
+      case(NICKEL)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element NICKEL'
+        ilast = -1
+        return
+
+      case(COPPER)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element COPPER'
+        ilast = -1
+        return
+
+      case(ZINC)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element ZINC'
+        ilast = -1
+        return
+
+      case(GALLIUM)
+        basis_data%exponents(1) = 0.3338000D+06
+        basis_data%s_coef(1) = 0.8380500D-03
+        basis_data%exponents(2) = 0.5010000D+05
+        basis_data%s_coef(2) = 0.6246600D-02
+        basis_data%exponents(3) = 0.1151000D+05
+        basis_data%s_coef(3) = 0.3202800D-01
+        basis_data%exponents(4) = 0.3292000D+04
+        basis_data%s_coef(4) = 0.1270900D+00
+        basis_data%exponents(5) = 0.1089000D+04
+        basis_data%s_coef(5) = 0.3909200D+00
+        basis_data%exponents(6) = 0.4010000D+03
+        basis_data%s_coef(6) = 0.5464300D+00
+        basis_data%exponents(7) = 0.4010000D+03
+        basis_data%s_coef(7) = 0.1807800D+00
+        basis_data%exponents(8) = 0.1593000D+03
+        basis_data%s_coef(8) = 0.6223900D+00
+        basis_data%exponents(9) = 0.6759000D+02
+        basis_data%s_coef(9) = 0.2495300D+00
+        basis_data%exponents(10) = 0.2489000D+02
+        basis_data%s_coef(10) = 0.1000000D+01
+        basis_data%exponents(11) = 0.1068000D+02
+        basis_data%s_coef(11) = 0.1000000D+01
+        basis_data%exponents(12) = 0.3386000D+01
+        basis_data%s_coef(12) = 0.1000000D+01
+        basis_data%exponents(13) = 0.1331000D+01
+        basis_data%s_coef(13) = 0.1000000D+01
+        basis_data%exponents(14) = 0.1853000D+00
+        basis_data%s_coef(14) = 0.1000000D+01
+        basis_data%exponents(15) = 0.6621000D-01
+        basis_data%s_coef(15) = 0.1000000D+01
+        basis_data%exponents(16) = 0.2181000D+04
+        basis_data%p_coef(16) = 0.2256500D-01
+        basis_data%exponents(17) = 0.5154000D+03
+        basis_data%p_coef(17) = 0.1836300D+00
+        basis_data%exponents(18) = 0.1648000D+03
+        basis_data%p_coef(18) = 0.8598400D+00
+        basis_data%exponents(19) = 0.6140000D+02
+        basis_data%p_coef(19) = 0.3434500D+00
+        basis_data%exponents(20) = 0.2498000D+02
+        basis_data%p_coef(20) = 0.5056100D+00
+        basis_data%exponents(21) = 0.1044000D+02
+        basis_data%p_coef(21) = 0.2622400D+00
+        basis_data%exponents(22) = 0.1044000D+02
+        basis_data%p_coef(22) = 0.6413000D-01
+        basis_data%exponents(23) = 0.5589000D+01
+        basis_data%p_coef(23) = 0.3788400D+00
+        basis_data%exponents(24) = 0.2517000D+01
+        basis_data%p_coef(24) = 0.6166900D+00
+        basis_data%exponents(25) = 0.1053000D+01
+        basis_data%p_coef(25) = 0.1000000D+01
+        basis_data%exponents(26) = 0.2915000D+00
+        basis_data%p_coef(26) = 0.1000000D+01
+        basis_data%exponents(27) = 0.1210000D+00
+        basis_data%p_coef(27) = 0.1000000D+01
+        basis_data%exponents(28) = 0.3990000D-01
+        basis_data%p_coef(28) = 0.1000000D+01
+        basis_data%exponents(29) = 0.6714000D+02
+        basis_data%d_coef(29) = 0.3095700D-01
+        basis_data%exponents(30) = 0.1894000D+02
+        basis_data%d_coef(30) = 0.1748000D+00
+        basis_data%exponents(31) = 0.6426000D+01
+        basis_data%d_coef(31) = 0.4434600D+00
+        basis_data%exponents(32) = 0.2190000D+01
+        basis_data%d_coef(32) = 0.5670200D+00
+        basis_data%exponents(33) = 0.6725000D+00
+        basis_data%d_coef(33) = 0.1000000D+01
+        basis_data%exponents(34) = 0.1690000D+00
+        basis_data%d_coef(34) = 0.1000000D+01
+        ilast = 34
+
+      case(GERMANIUM)
+        basis_data%exponents(1) = 0.3575000D+06
+        basis_data%s_coef(1) = 0.8389800D-03
+        basis_data%exponents(2) = 0.5367000D+05
+        basis_data%s_coef(2) = 0.6263500D-02
+        basis_data%exponents(3) = 0.1230000D+05
+        basis_data%s_coef(3) = 0.3203600D-01
+        basis_data%exponents(4) = 0.3512000D+04
+        basis_data%s_coef(4) = 0.1275100D+00
+        basis_data%exponents(5) = 0.1161000D+04
+        basis_data%s_coef(5) = 0.3916500D+00
+        basis_data%exponents(6) = 0.4280000D+03
+        basis_data%s_coef(6) = 0.5452800D+00
+        basis_data%exponents(7) = 0.4280000D+03
+        basis_data%s_coef(7) = 0.1816000D+00
+        basis_data%exponents(8) = 0.1700000D+03
+        basis_data%s_coef(8) = 0.6224800D+00
+        basis_data%exponents(9) = 0.7206000D+02
+        basis_data%s_coef(9) = 0.2487200D+00
+        basis_data%exponents(10) = 0.2669000D+02
+        basis_data%s_coef(10) = 0.1000000D+01
+        basis_data%exponents(11) = 0.1150000D+02
+        basis_data%s_coef(11) = 0.1000000D+01
+        basis_data%exponents(12) = 0.3742000D+01
+        basis_data%s_coef(12) = 0.1000000D+01
+        basis_data%exponents(13) = 0.1499000D+01
+        basis_data%s_coef(13) = 0.1000000D+01
+        basis_data%exponents(14) = 0.2292000D+00
+        basis_data%s_coef(14) = 0.1000000D+01
+        basis_data%exponents(15) = 0.8675000D-01
+        basis_data%s_coef(15) = 0.1000000D+01
+        basis_data%exponents(16) = 0.2345000D+04
+        basis_data%p_coef(16) = 0.2251400D-01
+        basis_data%exponents(17) = 0.5542000D+03
+        basis_data%p_coef(17) = 0.1833500D+00
+        basis_data%exponents(18) = 0.1773000D+03
+        basis_data%p_coef(18) = 0.8600300D+00
+        basis_data%exponents(19) = 0.6613000D+02
+        basis_data%p_coef(19) = 0.3430600D+00
+        basis_data%exponents(20) = 0.2690000D+02
+        basis_data%p_coef(20) = 0.5065200D+00
+        basis_data%exponents(21) = 0.1126000D+02
+        basis_data%p_coef(21) = 0.2614100D+00
+        basis_data%exponents(22) = 0.1126000D+02
+        basis_data%p_coef(22) = 0.6724600D-01
+        basis_data%exponents(23) = 0.6116000D+01
+        basis_data%p_coef(23) = 0.3723800D+00
+        basis_data%exponents(24) = 0.2819000D+01
+        basis_data%p_coef(24) = 0.6176300D+00
+        basis_data%exponents(25) = 0.1211000D+01
+        basis_data%p_coef(25) = 0.1000000D+01
+        basis_data%exponents(26) = 0.3568000D+00
+        basis_data%p_coef(26) = 0.1000000D+01
+        basis_data%exponents(27) = 0.1621000D+00
+        basis_data%p_coef(27) = 0.1000000D+01
+        basis_data%exponents(28) = 0.6084000D-01
+        basis_data%p_coef(28) = 0.1000000D+01
+        basis_data%exponents(29) = 0.7484000D+02
+        basis_data%d_coef(29) = 0.3039000D-01
+        basis_data%exponents(30) = 0.2123000D+02
+        basis_data%d_coef(30) = 0.1731900D+00
+        basis_data%exponents(31) = 0.7297000D+01
+        basis_data%d_coef(31) = 0.4409000D+00
+        basis_data%exponents(32) = 0.2549000D+01
+        basis_data%d_coef(32) = 0.5653200D+00
+        basis_data%exponents(33) = 0.8165000D+00
+        basis_data%d_coef(33) = 0.1000000D+01
+        basis_data%exponents(34) = 0.2280000D+00
+        basis_data%d_coef(34) = 0.1000000D+01
+        ilast = 34
+
+      case(ARSENIC)
+        basis_data%exponents(1) = 0.3812000D+06
+        basis_data%s_coef(1) = 0.8332700D-03
+        basis_data%exponents(2) = 0.5724000D+05
+        basis_data%s_coef(2) = 0.6219800D-02
+        basis_data%exponents(3) = 0.1311000D+05
+        basis_data%s_coef(3) = 0.3203000D-01
+        basis_data%exponents(4) = 0.3743000D+04
+        basis_data%s_coef(4) = 0.1272900D+00
+        basis_data%exponents(5) = 0.1238000D+04
+        basis_data%s_coef(5) = 0.3913200D+00
+        basis_data%exponents(6) = 0.4563000D+03
+        basis_data%s_coef(6) = 0.5458100D+00
+        basis_data%exponents(7) = 0.4563000D+03
+        basis_data%s_coef(7) = 0.1809700D+00
+        basis_data%exponents(8) = 0.1814000D+03
+        basis_data%s_coef(8) = 0.6218000D+00
+        basis_data%exponents(9) = 0.7707000D+02
+        basis_data%s_coef(9) = 0.2498800D+00
+        basis_data%exponents(10) = 0.2857000D+02
+        basis_data%s_coef(10) = 0.1000000D+01
+        basis_data%exponents(11) = 0.1236000D+02
+        basis_data%s_coef(11) = 0.1000000D+01
+        basis_data%exponents(12) = 0.4117000D+01
+        basis_data%s_coef(12) = 0.1000000D+01
+        basis_data%exponents(13) = 0.1678000D+01
+        basis_data%s_coef(13) = 0.1000000D+01
+        basis_data%exponents(14) = 0.2761000D+00
+        basis_data%s_coef(14) = 0.1000000D+01
+        basis_data%exponents(15) = 0.1105000D+00
+        basis_data%s_coef(15) = 0.1000000D+01
+        basis_data%exponents(16) = 0.2528000D+04
+        basis_data%p_coef(16) = 0.2227100D-01
+        basis_data%exponents(17) = 0.5973000D+03
+        basis_data%p_coef(17) = 0.1819900D+00
+        basis_data%exponents(18) = 0.1907000D+03
+        basis_data%p_coef(18) = 0.8613300D+00
+        basis_data%exponents(19) = 0.7096000D+02
+        basis_data%p_coef(19) = 0.3433800D+00
+        basis_data%exponents(20) = 0.2889000D+02
+        basis_data%p_coef(20) = 0.5059800D+00
+        basis_data%exponents(21) = 0.1213000D+02
+        basis_data%p_coef(21) = 0.2612800D+00
+        basis_data%exponents(22) = 0.1213000D+02
+        basis_data%p_coef(22) = 0.6853600D-01
+        basis_data%exponents(23) = 0.6533000D+01
+        basis_data%p_coef(23) = 0.3828200D+00
+        basis_data%exponents(24) = 0.3028000D+01
+        basis_data%p_coef(24) = 0.6059900D+00
+        basis_data%exponents(25) = 0.1344000D+01
+        basis_data%p_coef(25) = 0.1000000D+01
+        basis_data%exponents(26) = 0.5823000D+00
+        basis_data%p_coef(26) = 0.1000000D+01
+        basis_data%exponents(27) = 0.2558000D+00
+        basis_data%p_coef(27) = 0.1000000D+01
+        basis_data%exponents(28) = 0.8651000D-01
+        basis_data%p_coef(28) = 0.1000000D+01
+        basis_data%exponents(29) = 0.8605000D+02
+        basis_data%d_coef(29) = 0.2798900D-01
+        basis_data%exponents(30) = 0.2449000D+02
+        basis_data%d_coef(30) = 0.1650200D+00
+        basis_data%exponents(31) = 0.8442000D+01
+        basis_data%d_coef(31) = 0.4373600D+00
+        basis_data%exponents(32) = 0.2981000D+01
+        basis_data%d_coef(32) = 0.5725500D+00
+        basis_data%exponents(33) = 0.9790000D+00
+        basis_data%d_coef(33) = 0.1000000D+01
+        basis_data%exponents(34) = 0.2640000D+00
+        basis_data%d_coef(34) = 0.1000000D+01
+        ilast = 34
+
+      case(SELENIUM)
+        basis_data%exponents(1) = 0.4054000D+06
+        basis_data%s_coef(1) = 0.8310000D-03
+        basis_data%exponents(2) = 0.6085000D+05
+        basis_data%s_coef(2) = 0.6233100D-02
+        basis_data%exponents(3) = 0.1391000D+05
+        basis_data%s_coef(3) = 0.3207100D-01
+        basis_data%exponents(4) = 0.3989000D+04
+        basis_data%s_coef(4) = 0.1263600D+00
+        basis_data%exponents(5) = 0.1324000D+04
+        basis_data%s_coef(5) = 0.3889900D+00
+        basis_data%exponents(6) = 0.4870000D+03
+        basis_data%s_coef(6) = 0.5488800D+00
+        basis_data%exponents(7) = 0.4870000D+03
+        basis_data%s_coef(7) = 0.1796300D+00
+        basis_data%exponents(8) = 0.1932000D+03
+        basis_data%s_coef(8) = 0.6222700D+00
+        basis_data%exponents(9) = 0.8219000D+02
+        basis_data%s_coef(9) = 0.2506700D+00
+        basis_data%exponents(10) = 0.3052000D+02
+        basis_data%s_coef(10) = 0.1000000D+01
+        basis_data%exponents(11) = 0.1325000D+02
+        basis_data%s_coef(11) = 0.1000000D+01
+        basis_data%exponents(12) = 0.4510000D+01
+        basis_data%s_coef(12) = 0.1000000D+01
+        basis_data%exponents(13) = 0.1867000D+01
+        basis_data%s_coef(13) = 0.1000000D+01
+        basis_data%exponents(14) = 0.3190000D+00
+        basis_data%s_coef(14) = 0.1000000D+01
+        basis_data%exponents(15) = 0.1120000D+00
+        basis_data%s_coef(15) = 0.1000000D+01
+        basis_data%exponents(16) = 0.2706000D+04
+        basis_data%p_coef(16) = 0.2214600D-01
+        basis_data%exponents(17) = 0.6386000D+03
+        basis_data%p_coef(17) = 0.1818000D+00
+        basis_data%exponents(18) = 0.2038000D+03
+        basis_data%p_coef(18) = 0.8615500D+00
+        basis_data%exponents(19) = 0.7596000D+02
+        basis_data%p_coef(19) = 0.3424300D+00
+        basis_data%exponents(20) = 0.3102000D+02
+        basis_data%p_coef(20) = 0.5054100D+00
+        basis_data%exponents(21) = 0.1305000D+02
+        basis_data%p_coef(21) = 0.2623700D+00
+        basis_data%exponents(22) = 0.1305000D+02
+        basis_data%p_coef(22) = 0.7016300D-01
+        basis_data%exponents(23) = 0.6986000D+01
+        basis_data%p_coef(23) = 0.3841900D+00
+        basis_data%exponents(24) = 0.3234000D+01
+        basis_data%p_coef(24) = 0.6036800D+00
+        basis_data%exponents(25) = 0.1475000D+01
+        basis_data%p_coef(25) = 0.1000000D+01
+        basis_data%exponents(26) = 0.7275000D+00
+        basis_data%p_coef(26) = 0.1000000D+01
+        basis_data%exponents(27) = 0.2869000D+00
+        basis_data%p_coef(27) = 0.1000000D+01
+        basis_data%exponents(28) = 0.9679000D-01
+        basis_data%p_coef(28) = 0.1000000D+01
+        basis_data%exponents(29) = 0.9901000D+02
+        basis_data%d_coef(29) = 0.2559600D-01
+        basis_data%exponents(30) = 0.2841000D+02
+        basis_data%d_coef(30) = 0.1545900D+00
+        basis_data%exponents(31) = 0.9863000D+01
+        basis_data%d_coef(31) = 0.4287800D+00
+        basis_data%exponents(32) = 0.3514000D+01
+        basis_data%d_coef(32) = 0.5862000D+00
+        basis_data%exponents(33) = 0.1171000D+01
+        basis_data%d_coef(33) = 0.1000000D+01
+        basis_data%exponents(34) = 0.3050000D+00
+        basis_data%d_coef(34) = 0.1000000D+01
+        ilast = 34
+
+      case(BROMINE)
+        basis_data%exponents(1) = 0.4397000D+06
+        basis_data%s_coef(1) = 0.8130000D-03
+        basis_data%exponents(2) = 0.6603000D+05
+        basis_data%s_coef(2) = 0.6285000D-02
+        basis_data%exponents(3) = 0.1514000D+05
+        basis_data%s_coef(3) = 0.3192000D-01
+        basis_data%exponents(4) = 0.4317000D+04
+        basis_data%s_coef(4) = 0.1288000D+00
+        basis_data%exponents(5) = 0.1414000D+04
+        basis_data%s_coef(5) = 0.3946000D+00
+        basis_data%exponents(6) = 0.5239000D+03
+        basis_data%s_coef(6) = 0.5413000D+00
+        basis_data%exponents(7) = 0.5239000D+03
+        basis_data%s_coef(7) = 0.1831000D+00
+        basis_data%exponents(8) = 0.2077000D+03
+        basis_data%s_coef(8) = 0.6176000D+00
+        basis_data%exponents(9) = 0.8654000D+02
+        basis_data%s_coef(9) = 0.2538000D+00
+        basis_data%exponents(10) = 0.3052000D+02
+        basis_data%s_coef(10) = 0.1000000D+01
+        basis_data%exponents(11) = 0.1298000D+02
+        basis_data%s_coef(11) = 0.1000000D+01
+        basis_data%exponents(12) = 0.4412000D+01
+        basis_data%s_coef(12) = 0.1000000D+01
+        basis_data%exponents(13) = 0.1862000D+01
+        basis_data%s_coef(13) = 0.1000000D+01
+        basis_data%exponents(14) = 0.3932000D+00
+        basis_data%s_coef(14) = 0.1000000D+01
+        basis_data%exponents(15) = 0.1400000D+00
+        basis_data%s_coef(15) = 0.1000000D+01
+        basis_data%exponents(16) = 0.2957000D+04
+        basis_data%p_coef(16) = 0.2226000D-01
+        basis_data%exponents(17) = 0.7003000D+03
+        basis_data%p_coef(17) = 0.1802000D+00
+        basis_data%exponents(18) = 0.2246000D+03
+        basis_data%p_coef(18) = 0.8624000D+00
+        basis_data%exponents(19) = 0.8259000D+02
+        basis_data%p_coef(19) = 0.3440000D+00
+        basis_data%exponents(20) = 0.3319000D+02
+        basis_data%p_coef(20) = 0.5071000D+00
+        basis_data%exponents(21) = 0.1420000D+02
+        basis_data%p_coef(21) = 0.2590000D+00
+        basis_data%exponents(22) = 0.1420000D+02
+        basis_data%p_coef(22) = 0.7965000D-01
+        basis_data%exponents(23) = 0.7438000D+01
+        basis_data%p_coef(23) = 0.3734000D+00
+        basis_data%exponents(24) = 0.3526000D+01
+        basis_data%p_coef(24) = 0.6049000D+00
+        basis_data%exponents(25) = 0.1595000D+01
+        basis_data%p_coef(25) = 0.1000000D+01
+        basis_data%exponents(26) = 0.8462000D+00
+        basis_data%p_coef(26) = 0.1000000D+01
+        basis_data%exponents(27) = 0.3186000D+00
+        basis_data%p_coef(27) = 0.1000000D+01
+        basis_data%exponents(28) = 0.1096000D+00
+        basis_data%p_coef(28) = 0.1000000D+01
+        basis_data%exponents(29) = 0.1348000D+03
+        basis_data%d_coef(29) = 0.1831000D-01
+        basis_data%exponents(30) = 0.3639000D+02
+        basis_data%d_coef(30) = 0.1350000D+00
+        basis_data%exponents(31) = 0.1216000D+02
+        basis_data%d_coef(31) = 0.4261000D+00
+        basis_data%exponents(32) = 0.4341000D+01
+        basis_data%d_coef(32) = 0.6043000D+00
+        basis_data%exponents(33) = 0.1535000D+01
+        basis_data%d_coef(33) = 0.1000000D+01
+        basis_data%exponents(34) = 0.4510000D+00
+        basis_data%d_coef(34) = 0.1000000D+01
+        ilast = 34
+
+      case(KRYPTON)
+        basis_data%exponents(1) = 0.4562000D+06
+        basis_data%s_coef(1) = 0.8111000D-03
+        basis_data%exponents(2) = 0.6846000D+05
+        basis_data%s_coef(2) = 0.6255200D-02
+        basis_data%exponents(3) = 0.1565000D+05
+        basis_data%s_coef(3) = 0.3202200D-01
+        basis_data%exponents(4) = 0.4500000D+04
+        basis_data%s_coef(4) = 0.1254600D+00
+        basis_data%exponents(5) = 0.1497000D+04
+        basis_data%s_coef(5) = 0.3866600D+00
+        basis_data%exponents(6) = 0.5505000D+03
+        basis_data%s_coef(6) = 0.5518800D+00
+        basis_data%exponents(7) = 0.5505000D+03
+        basis_data%s_coef(7) = 0.1771100D+00
+        basis_data%exponents(8) = 0.2182000D+03
+        basis_data%s_coef(8) = 0.6224800D+00
+        basis_data%exponents(9) = 0.9297000D+02
+        basis_data%s_coef(9) = 0.2527900D+00
+        basis_data%exponents(10) = 0.3459000D+02
+        basis_data%s_coef(10) = 0.1000000D+01
+        basis_data%exponents(11) = 0.1512000D+02
+        basis_data%s_coef(11) = 0.1000000D+01
+        basis_data%exponents(12) = 0.5346000D+01
+        basis_data%s_coef(12) = 0.1000000D+01
+        basis_data%exponents(13) = 0.2273000D+01
+        basis_data%s_coef(13) = 0.1000000D+01
+        basis_data%exponents(14) = 0.4841000D+00
+        basis_data%s_coef(14) = 0.1000000D+01
+        basis_data%exponents(15) = 0.1849000D+00
+        basis_data%s_coef(15) = 0.1000000D+01
+        basis_data%exponents(16) = 0.3074000D+04
+        basis_data%p_coef(16) = 0.2199800D-01
+        basis_data%exponents(17) = 0.7257000D+03
+        basis_data%p_coef(17) = 0.1810200D+00
+        basis_data%exponents(18) = 0.2315000D+03
+        basis_data%p_coef(18) = 0.8622300D+00
+        basis_data%exponents(19) = 0.8645000D+02
+        basis_data%p_coef(19) = 0.3415500D+00
+        basis_data%exponents(20) = 0.3555000D+02
+        basis_data%p_coef(20) = 0.5025500D+00
+        basis_data%exponents(21) = 0.1514000D+02
+        basis_data%p_coef(21) = 0.2645300D+00
+        basis_data%exponents(22) = 0.1514000D+02
+        basis_data%p_coef(22) = 0.7167000D-01
+        basis_data%exponents(23) = 0.8031000D+01
+        basis_data%p_coef(23) = 0.3970800D+00
+        basis_data%exponents(24) = 0.3799000D+01
+        basis_data%p_coef(24) = 0.5876200D+00
+        basis_data%exponents(25) = 0.1849000D+01
+        basis_data%p_coef(25) = 0.1000000D+01
+        basis_data%exponents(26) = 0.8676000D+00
+        basis_data%p_coef(26) = 0.1000000D+01
+        basis_data%exponents(27) = 0.3329000D+00
+        basis_data%p_coef(27) = 0.1000000D+01
+        basis_data%exponents(28) = 0.1199000D+00
+        basis_data%p_coef(28) = 0.1000000D+01
+        basis_data%exponents(29) = 0.1225000D+03
+        basis_data%d_coef(29) = 0.2337700D-01
+        basis_data%exponents(30) = 0.3537000D+02
+        basis_data%d_coef(30) = 0.1461000D+00
+        basis_data%exponents(31) = 0.1239000D+02
+        basis_data%d_coef(31) = 0.4223000D+00
+        basis_data%exponents(32) = 0.4496000D+01
+        basis_data%d_coef(32) = 0.5945200D+00
+        basis_data%exponents(33) = 0.1546000D+01
+        basis_data%d_coef(33) = 0.1000000D+01
+        basis_data%exponents(34) = 0.3950000D+00
+        basis_data%d_coef(34) = 0.1000000D+01
+        ilast = 34
+
+      case(RUBIDIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element RUBIDIUM'
+        ilast = -1
+        return
+
+      case(STRONTIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element STRONTIUM'
+        ilast = -1
+        return
+
+      case(YTTRIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element YTTRIUM'
+        ilast = -1
+        return
+
+      case(ZIRCONIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element ZIRCONIUM'
+        ilast = -1
+        return
+
+      case(NIOBIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element NIOBIUM'
+        ilast = -1
+        return
+
+      case(MOLYBDENUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element MOLYBDENUM'
+        ilast = -1
+        return
+
+      case(TECHNETIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element TECHNETIUM'
+        ilast = -1
+        return
+
+      case(RUTHENIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element RUTHENIUM'
+        ilast = -1
+        return
+
+      case(RHODIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element RHODIUM'
+        ilast = -1
+        return
+
+      case(PALLADIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element PALLADIUM'
+        ilast = -1
+        return
+
+      case(SILVER)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element SILVER'
+        ilast = -1
+        return
+
+      case(CADMIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element CADMIUM'
+        ilast = -1
+        return
+
+      case(INDIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element INDIUM'
+        ilast = -1
+        return
+
+      case(TIN)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element TIN'
+        ilast = -1
+        return
+
+      case(ANTIMONY)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element ANTIMONY'
+        ilast = -1
+        return
+
+      case(TELLURIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element TELLURIUM'
+        ilast = -1
+        return
+
+      case(IODINE)
+        basis_data%exponents(1) = 0.4447500D+06
+        basis_data%s_coef(1) = 0.8900000D-03
+        basis_data%exponents(2) = 0.6612700D+05
+        basis_data%s_coef(2) = 0.6940000D-02
+        basis_data%exponents(3) = 0.1481500D+05
+        basis_data%s_coef(3) = 0.3609000D-01
+        basis_data%exponents(4) = 0.4144900D+04
+        basis_data%s_coef(4) = 0.1356800D+00
+        basis_data%exponents(5) = 0.1361200D+04
+        basis_data%s_coef(5) = 0.3387800D+00
+        basis_data%exponents(6) = 0.5084400D+03
+        basis_data%s_coef(6) = 0.4365900D+00
+        basis_data%exponents(7) = 0.2095900D+03
+        basis_data%s_coef(7) = 0.1837500D+00
+        basis_data%exponents(8) = 0.8195900D+02
+        basis_data%s_coef(8) = 0.1000000D+01
+        basis_data%exponents(9) = 0.3680500D+02
+        basis_data%s_coef(9) = 0.1000000D+01
+        basis_data%exponents(10) = 0.1349500D+02
+        basis_data%s_coef(10) = 0.1000000D+01
+        basis_data%exponents(11) = 0.6885900D+01
+        basis_data%s_coef(11) = 0.1000000D+01
+        basis_data%exponents(12) = 0.2552000D+01
+        basis_data%s_coef(12) = 0.1000000D+01
+        basis_data%exponents(13) = 0.1208800D+01
+        basis_data%s_coef(13) = 0.1000000D+01
+        basis_data%exponents(14) = 0.2734000D+00
+        basis_data%s_coef(14) = 0.1000000D+01
+        basis_data%exponents(15) = 0.1009000D+00
+        basis_data%s_coef(15) = 0.1000000D+01
+        basis_data%exponents(16) = 0.2953600D+04
+        basis_data%p_coef(16) = 0.1221000D-01
+        basis_data%exponents(17) = 0.7126100D+03
+        basis_data%p_coef(17) = 0.8587000D-01
+        basis_data%exponents(18) = 0.2367100D+03
+        basis_data%p_coef(18) = 0.2949300D+00
+        basis_data%exponents(19) = 0.9263100D+02
+        basis_data%p_coef(19) = 0.4784900D+00
+        basis_data%exponents(20) = 0.3973200D+02
+        basis_data%p_coef(20) = 0.1000000D+01
+        basis_data%exponents(21) = 0.1727300D+02
+        basis_data%p_coef(21) = 0.1000000D+01
+        basis_data%exponents(22) = 0.7957000D+01
+        basis_data%p_coef(22) = 0.1000000D+01
+        basis_data%exponents(23) = 0.3152900D+01
+        basis_data%p_coef(23) = 0.1000000D+01
+        basis_data%exponents(24) = 0.1332800D+01
+        basis_data%p_coef(24) = 0.1000000D+01
+        basis_data%exponents(25) = 0.4947000D+00
+        basis_data%p_coef(25) = 0.1000000D+01
+        basis_data%exponents(26) = 0.2160000D+00
+        basis_data%p_coef(26) = 0.1000000D+01
+        basis_data%exponents(27) = 0.8293000D-01
+        basis_data%p_coef(27) = 0.1000000D+01
+        basis_data%exponents(28) = 0.2619500D+03
+        basis_data%d_coef(28) = 0.3144000D-01
+        basis_data%exponents(29) = 0.7673400D+02
+        basis_data%d_coef(29) = 0.1902800D+00
+        basis_data%exponents(30) = 0.2755100D+02
+        basis_data%d_coef(30) = 0.4724700D+00
+        basis_data%exponents(31) = 0.1060600D+02
+        basis_data%d_coef(31) = 0.1000000D+01
+        basis_data%exponents(32) = 0.3421700D+01
+        basis_data%d_coef(32) = 0.1000000D+01
+        basis_data%exponents(33) = 0.1137000D+01
+        basis_data%d_coef(33) = 0.1000000D+01
+        basis_data%exponents(34) = 0.3020000D+00
+        basis_data%d_coef(34) = 0.1000000D+01
+        ilast = 34
+
+      case(XENON)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element XENON'
+        ilast = -1
+        return
+
+      case(CESIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element CESIUM'
+        ilast = -1
+        return
+
+      case(BARIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element BARIUM'
+        ilast = -1
+        return
+
+      case(LANTHANUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element LANTHANUM'
+        ilast = -1
+        return
+
+      case(CERIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element CERIUM'
+        ilast = -1
+        return
+
+      case(PRASEODYMIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element PRASEODYMIUM'
+        ilast = -1
+        return
+
+      case(NEODYMIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element NEODYMIUM'
+        ilast = -1
+        return
+
+      case(PROMETHIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element PROMETHIUM'
+        ilast = -1
+        return
+
+      case(SAMARIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element SAMARIUM'
+        ilast = -1
+        return
+
+      case(EUROPIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element EUROPIUM'
+        ilast = -1
+        return
+
+      case(GADOLINIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element GADOLINIUM'
+        ilast = -1
+        return
+
+      case(TERBIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element TERBIUM'
+        ilast = -1
+        return
+
+      case(DYSPROSIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element DYSPROSIUM'
+        ilast = -1
+        return
+
+      case(HOLMIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element HOLMIUM'
+        ilast = -1
+        return
+
+      case(ERBIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element ERBIUM'
+        ilast = -1
+        return
+
+      case(THULIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element THULIUM'
+        ilast = -1
+        return
+
+      case(YTTERBIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element YTTERBIUM'
+        ilast = -1
+        return
+
+      case(LUTETIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element LUTETIUM'
+        ilast = -1
+        return
+
+      case(HAFNIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element HAFNIUM'
+        ilast = -1
+        return
+
+      case(TANTALUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element TANTALUM'
+        ilast = -1
+        return
+
+      case(TUNGSTEN)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element TUNGSTEN'
+        ilast = -1
+        return
+
+      case(RHENIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element RHENIUM'
+        ilast = -1
+        return
+
+      case(OSMIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element OSMIUM'
+        ilast = -1
+        return
+
+      case(IRIDIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element IRIDIUM'
+        ilast = -1
+        return
+
+      case(PLATINUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element PLATINUM'
+        ilast = -1
+        return
+
+      case(GOLD)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element GOLD'
+        ilast = -1
+        return
+
+      case(MERCURY)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element MERCURY'
+        ilast = -1
+        return
+
+      case(THALLIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element THALLIUM'
+        ilast = -1
+        return
+
+      case(LEAD)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element LEAD'
+        ilast = -1
+        return
+
+      case(BISMUTH)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element BISMUTH'
+        ilast = -1
+        return
+
+      case(POLONIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element POLONIUM'
+        ilast = -1
+        return
+
+      case(ASTATINE)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element ASTATINE'
+        ilast = -1
+        return
+
+      case(RADON)
+        if(maswrk) write(iw,*) 'ERROR: 6-311G* basis not available for element RADON'
+        ilast = -1
+        return
+
+      case default
+        if(maswrk) write(iw,*) 'ERROR: Element not supported in basis', element_number
+        ilast = -1
+        return
+    end select
+
+  end subroutine get_basis_b_6_311gstar
+
+end submodule basis_driver_b_6_311gstar

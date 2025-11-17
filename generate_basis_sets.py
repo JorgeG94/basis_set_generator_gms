@@ -186,264 +186,6 @@ def strip_family_prefix(basis_name, family_name):
         return basis_name[len(family_lower)+1:]  # +1 for the hyphen
     return basis_name
 
-def json_to_gamess_fortran_modular(basis_names, elements=None, module_name="basis_ccn_dk", base_subroutine_name="get_ccn_dk_basis"):
-    """
-    Generate modular GAMESS Fortran module with submodules for parallel compilation.
-    Uses a derived type for basis set data.
-    
-    Args:
-        basis_names: List of basis set names (e.g., ['cc-pvdz-dk', 'cc-pvtz-dk', 'cc-pvqz-dk', 'cc-pv5z-dk'])
-        elements: List of element symbols (e.g., ['H', 'He']) or None to get all available
-        module_name: Name of the module to wrap everything
-        base_subroutine_name: Base name for subroutines
-    
-    Returns:
-        Dictionary with module and submodule codes
-    """
-    
-    # Download all basis sets and determine which elements are available
-    basis_data = {}
-    elements_per_basis = {}
-    
-    for basis_name in basis_names:
-        basis_result = bse.get_basis(
-            basis_name,
-            elements=elements,
-            fmt='qcschema',
-            optimize_general=True 
-        )
-        if isinstance(basis_result, str):
-            basis_data[basis_name] = json.loads(basis_result)
-        else:
-            basis_data[basis_name] = basis_result
-        
-        # Extract elements for this basis
-        elements_in_basis = set()
-        for key in basis_data[basis_name]['center_data'].keys():
-            elem_symbol = key.split('_')[0].upper()
-            elements_in_basis.add(elem_symbol)
-        elements_per_basis[basis_name] = elements_in_basis
-    
-    # Find union of all elements across ALL basis sets
-    if elements is None:
-        all_elements = set.union(*elements_per_basis.values())
-        elements_to_use = sorted(list(all_elements), key=get_atomic_number)
-        print(f"Found {len(elements_to_use)} total elements across all basis sets: {elements_to_use}")
-    else:
-        elements_to_use = sorted(elements, key=lambda x: get_atomic_number(x.upper()))
-    
-    # Report coverage
-    print("\nElement coverage:")
-    for elem in elements_to_use:
-        available_in = [basis for basis, elems in elements_per_basis.items() if elem in elems]
-        missing_in = [basis for basis, elems in elements_per_basis.items() if elem not in elems]
-        if missing_in:
-            print(f"  {elem}: available in {len(available_in)}/{len(basis_names)} basis sets (missing: {', '.join(missing_in)})")
-    
-    # Dictionary to hold all files
-    fortran_files = {}
-    
-    # Generate main module with interfaces
-    main_module = generate_main_module(module_name, base_subroutine_name, elements_to_use, basis_names)
-    fortran_files[f"{module_name}.f90"] = main_module
-    
-    # Generate submodules for each zeta level
-    for n_zeta_idx, basis_name in enumerate(basis_names, start=1):
-        if family_name:
-            short_name = strip_family_prefix(basis_name, family_name)
-        else:
-            short_name = basis_name
-        basis_const_name = sanitize_basis_name(short_name)
-        worker_name = f"{base_subroutine_name}_{basis_const_name.lower()}"
-        submodule_name = f"{module_name}_{basis_const_name.lower()}"
-        
-        submodule_code = generate_worker_submodule(
-            module_name, submodule_name, basis_name, basis_const_name, 
-            worker_name, elements_to_use, basis_data[basis_name]
-        )
-        fortran_files[f"{submodule_name}.f90"] = submodule_code
-    
-    return fortran_files
-
-def generate_main_module(module_name, base_subroutine_name, elements, basis_names):
-    """Generate the main module with interface definitions and driver."""
-    fortran_lines = []
-    
-    elem_imports = ', '.join([e.upper() for e in elements])
-    
-    # Module header
-    fortran_lines.append(f"module {module_name}")
-    fortran_lines.append(f"  use periodic_table")
-    fortran_lines.append("  use basis_set_data, only: basis_set_type")
-    fortran_lines.append("  use basis_set_constants, only: " + ', '.join([f"{sanitize_basis_name(basis).upper()}" for basis in basis_names]))
-    fortran_lines.append("  use iso_fortran_env, only: real64")
-    fortran_lines.append("  implicit none")
-    fortran_lines.append("  private")
-    fortran_lines.append(f"  public :: {base_subroutine_name}")
-    fortran_lines.append("")
-    
-    # Interface for worker subroutines
-    fortran_lines.append("  interface")
-    fortran_lines.append("")
-    
-    for basis_name in basis_names:
-        safe_name = sanitize_basis_name(basis_name)
-        worker_name = f"{base_subroutine_name}_{safe_name}"
-        
-        fortran_lines.append(f"    module subroutine {worker_name}(basis_data, element_number, ilast)")
-        fortran_lines.append("      type(basis_set_type), intent(out) :: basis_data")
-        fortran_lines.append("      integer, intent(in) :: element_number")
-        fortran_lines.append("      integer, intent(out) :: ilast")
-        fortran_lines.append(f"    end subroutine {worker_name}")
-        fortran_lines.append("")
-    
-    fortran_lines.append("  end interface")
-    fortran_lines.append("")
-    fortran_lines.append("contains")
-    fortran_lines.append("")
-    
-    # Generate driver subroutine
-    driver_code = generate_driver_subroutine_module(base_subroutine_name, basis_names)
-    fortran_lines.append(driver_code)
-    fortran_lines.append("")
-    
-    fortran_lines.append(f"end module {module_name}")
-    
-    return '\n'.join(fortran_lines)
-
-
-def generate_driver_subroutine_module(base_name, basis_names):
-    """Generate the driver subroutine (stays in main module)."""
-    fortran_lines = []
-    
-    fortran_lines.append(f"  subroutine {base_name}(basis_data, element_number, basis_type, ilast)")
-    fortran_lines.append("    type(basis_set_type), intent(out) :: basis_data")
-    fortran_lines.append("    integer, intent(in) :: element_number, basis_type")
-    fortran_lines.append("    integer, intent(out) :: ilast")
-    fortran_lines.append("    integer :: iw")
-    fortran_lines.append("    logical :: maswrk")
-    fortran_lines.append("")
-    fortran_lines.append("    maswrk = .true.")
-    fortran_lines.append("    iw = 6")
-    fortran_lines.append("    ilast = 0")
-    fortran_lines.append("")
-    fortran_lines.append("    select case (basis_type)")
-    fortran_lines.append("")
-    
-    # Create cases for each basis type
-    for basis_idx, basis_name in enumerate(basis_names, start=1):
-        safe_name = sanitize_basis_name(basis_name)
-        basis_const_name = safe_name.upper()
-        worker_name = f"{base_name}_{safe_name}"
-        
-        fortran_lines.append(f"      case ({basis_const_name})")
-        fortran_lines.append(f"        call {worker_name}(basis_data, element_number, ilast)")
-        fortran_lines.append("")
-    
-    # Default case
-    fortran_lines.append("      case default")
-    fortran_lines.append("        if(maswrk) write(iw,*) 'ERROR: Basis type not supported'")
-    fortran_lines.append("        ilast = -1")
-    fortran_lines.append("        return")
-    fortran_lines.append("    end select")
-    fortran_lines.append("")
-    fortran_lines.append(f"  end subroutine {base_name}")
-    
-    return '\n'.join(fortran_lines)
-
-
-def generate_worker_submodule(parent_module, submodule_name, basis_name, basis_const_name, worker_name, elements, basis_dict):
-    """Generate a submodule for a specific zeta level."""
-    fortran_lines = []
-    
-    # Submodule header
-    fortran_lines.append(f"submodule ({parent_module}) {submodule_name}")
-    fortran_lines.append("  implicit none")
-    fortran_lines.append("")
-    fortran_lines.append("contains")
-    fortran_lines.append("")
-    
-    # Worker subroutine implementation
-    fortran_lines.append(f"  module subroutine {worker_name}(basis_data, element_number, ilast)")
-    fortran_lines.append("    type(basis_set_type), intent(out) :: basis_data")
-    fortran_lines.append("    integer, intent(in) :: element_number")
-    fortran_lines.append("    integer, intent(out) :: ilast")
-    fortran_lines.append("    integer :: iw")
-    fortran_lines.append("    logical :: maswrk")
-    fortran_lines.append("    maswrk = .true.")
-    fortran_lines.append("    iw = 6")
-    fortran_lines.append("    ilast = 0")
-    fortran_lines.append("")
-    fortran_lines.append("    select case (element_number)")
-    fortran_lines.append("")
-    
-    # Process each element
-    for elem_symbol in elements:
-        elem_name = elem_symbol.upper()
-        full_name, atomic_num = get_element_name(elem_symbol)
-        
-        fortran_lines.append(f"      case({full_name})")
-        
-        # Find the correct key for this element
-        element_key = None
-        elem_lower = elem_symbol.lower()
-        for key in basis_dict['center_data'].keys():
-            if key.lower().startswith(elem_lower + '_'):
-                element_key = key
-                break
-        
-        if element_key is None:
-            # Element not available in this basis set
-            fortran_lines.append(f"        if(maswrk) write(iw,*) 'ERROR: {basis_name} basis not available for element {full_name}'")
-            fortran_lines.append("        ilast = -1")
-            fortran_lines.append("        return")
-        else:
-            element_data = basis_dict['center_data'][element_key]
-            
-            # Process shells and generate entries
-            index = 1
-            for shell in element_data['electron_shells']:
-                am = shell['angular_momentum'][0]
-                am_label = ['s_coef', 'p_coef', 'd_coef', 'f_coef', 'g_coef', 'h_coef', 'i_coef'][am]
-                exponents = [float(e) for e in shell['exponents']]
-                coefficients = shell['coefficients']
-                
-                # For each coefficient set
-                for coef_set in coefficients:
-                    coefs = [float(c) for c in coef_set]
-                    
-                    # Find non-zero coefficients
-                    non_zero_indices = [i for i, c in enumerate(coefs) if abs(c) > 1e-10]
-                    
-                    # Write out each non-zero primitive
-                    for i in non_zero_indices:
-                        exp = exponents[i]
-                        coef = coefs[i]
-                        
-                        exp_str = format_fortran_float(exp)
-                        coef_str = format_fortran_float(coef)
-                        
-                        fortran_lines.append(f"        basis_data%exponents({index}) = {exp_str}")
-                        fortran_lines.append(f"        basis_data%{am_label}({index}) = {coef_str}")
-                        index += 1
-            
-            fortran_lines.append(f"        ilast = {index - 1}")
-        
-        fortran_lines.append("")
-    
-    # Default case
-    fortran_lines.append("      case default")
-    fortran_lines.append("        if(maswrk) write(iw,*) 'ERROR: Element not supported in this basis subroutine'")
-    fortran_lines.append("        ilast = -1")
-    fortran_lines.append("        return")
-    fortran_lines.append("    end select")
-    fortran_lines.append("")
-    fortran_lines.append(f"  end subroutine {worker_name}")
-    fortran_lines.append("")
-    fortran_lines.append(f"end submodule {submodule_name}")
-    
-    return '\n'.join(fortran_lines)
-
 def generate_basis_constants_module(basis_families):
     """Generate a module with named constants for all basis sets across families."""
     fortran_lines = []
@@ -480,6 +222,174 @@ def generate_basis_constants_module(basis_families):
     
     return '\n'.join(fortran_lines)
 
+def generate_unified_driver_module(basis_families):
+    """Generate a single unified driver module with all basis sets."""
+    fortran_lines = []
+    
+    # Module header
+    fortran_lines.append("module basis_driver")
+    fortran_lines.append("  use periodic_table")
+    fortran_lines.append("  use basis_set_data, only: basis_set_type")
+    fortran_lines.append("  use basis_set_constants")
+    fortran_lines.append("  use iso_fortran_env, only: real64")
+    fortran_lines.append("  implicit none")
+    fortran_lines.append("  private")
+    fortran_lines.append("  public :: load_basis")
+    fortran_lines.append("")
+    
+    # Interface for ALL worker subroutines across ALL families
+    fortran_lines.append("  interface")
+    fortran_lines.append("")
+    
+    for family_name, basis_sets in basis_families.items():
+        for basis_name in basis_sets:
+            safe_name = sanitize_basis_name(basis_name)
+            worker_name = f"get_basis_{safe_name}"
+            
+            fortran_lines.append(f"    module subroutine {worker_name}(basis_data, element_number, ilast)")
+            fortran_lines.append("      type(basis_set_type), intent(out) :: basis_data")
+            fortran_lines.append("      integer, intent(in) :: element_number")
+            fortran_lines.append("      integer, intent(out) :: ilast")
+            fortran_lines.append(f"    end subroutine {worker_name}")
+            fortran_lines.append("")
+    
+    fortran_lines.append("  end interface")
+    fortran_lines.append("")
+    fortran_lines.append("contains")
+    fortran_lines.append("")
+    
+    # Generate the unified load_basis subroutine
+    fortran_lines.append("  subroutine load_basis(basis_data, element_number, basis_type, ilast)")
+    fortran_lines.append("    type(basis_set_type), intent(out) :: basis_data")
+    fortran_lines.append("    integer, intent(in) :: element_number, basis_type")
+    fortran_lines.append("    integer, intent(out) :: ilast")
+    fortran_lines.append("    integer :: iw")
+    fortran_lines.append("    logical :: maswrk")
+    fortran_lines.append("")
+    fortran_lines.append("    maswrk = .true.")
+    fortran_lines.append("    iw = 6")
+    fortran_lines.append("    ilast = 0")
+    fortran_lines.append("")
+    fortran_lines.append("    select case (basis_type)")
+    fortran_lines.append("")
+    
+    # Create cases for ALL basis sets across ALL families
+    for family_name, basis_sets in basis_families.items():
+        fortran_lines.append(f"      ! {family_name.upper()} family")
+        for basis_name in basis_sets:
+            safe_name = sanitize_basis_name(basis_name)
+            const_name = safe_name.upper()
+            worker_name = f"get_basis_{safe_name}"
+            
+            fortran_lines.append(f"      case ({const_name})")
+            fortran_lines.append(f"        call {worker_name}(basis_data, element_number, ilast)")
+        fortran_lines.append("")
+    
+    # Default case
+    fortran_lines.append("      case default")
+    fortran_lines.append("        if(maswrk) write(iw,*) 'ERROR: Basis type', basis_type, 'not supported'")
+    fortran_lines.append("        ilast = -1")
+    fortran_lines.append("        return")
+    fortran_lines.append("    end select")
+    fortran_lines.append("")
+    fortran_lines.append("  end subroutine load_basis")
+    fortran_lines.append("")
+    fortran_lines.append("end module basis_driver")
+    
+    return '\n'.join(fortran_lines)
+
+
+def generate_basis_submodule(basis_name, elements, basis_dict):
+    """Generate a standalone submodule for a specific basis set."""
+    fortran_lines = []
+    
+    safe_name = sanitize_basis_name(basis_name)
+    worker_name = f"get_basis_{safe_name}"
+    submodule_name = f"basis_driver_{safe_name}"
+    
+    # Submodule header
+    fortran_lines.append(f"submodule (basis_driver) {submodule_name}")
+    fortran_lines.append("  implicit none")
+    fortran_lines.append("")
+    fortran_lines.append("contains")
+    fortran_lines.append("")
+    
+    # Worker subroutine implementation
+    fortran_lines.append(f"  module subroutine {worker_name}(basis_data, element_number, ilast)")
+    fortran_lines.append("    type(basis_set_type), intent(out) :: basis_data")
+    fortran_lines.append("    integer, intent(in) :: element_number")
+    fortran_lines.append("    integer, intent(out) :: ilast")
+    fortran_lines.append("    integer :: iw")
+    fortran_lines.append("    logical :: maswrk")
+    fortran_lines.append("    maswrk = .true.")
+    fortran_lines.append("    iw = 6")
+    fortran_lines.append("    ilast = 0")
+    fortran_lines.append("")
+    fortran_lines.append("    select case (element_number)")
+    fortran_lines.append("")
+    
+    # Process each element (same as before)
+    for elem_symbol in elements:
+        full_name, atomic_num = get_element_name(elem_symbol)
+        
+        fortran_lines.append(f"      case({full_name})")
+        
+        # Find the correct key for this element
+        element_key = None
+        elem_lower = elem_symbol.lower()
+        for key in basis_dict['center_data'].keys():
+            if key.lower().startswith(elem_lower + '_'):
+                element_key = key
+                break
+        
+        if element_key is None:
+            fortran_lines.append(f"        if(maswrk) write(iw,*) 'ERROR: {basis_name} basis not available for element {full_name}'")
+            fortran_lines.append("        ilast = -1")
+            fortran_lines.append("        return")
+        else:
+            element_data = basis_dict['center_data'][element_key]
+            
+            # Process shells (same as before)
+            index = 1
+            for shell in element_data['electron_shells']:
+                am = shell['angular_momentum'][0]
+                am_label = ['s_coef', 'p_coef', 'd_coef', 'f_coef', 'g_coef', 'h_coef', 'i_coef'][am]
+                exponents = [float(e) for e in shell['exponents']]
+                coefficients = shell['coefficients']
+                
+                for coef_set in coefficients:
+                    coefs = [float(c) for c in coef_set]
+                    non_zero_indices = [i for i, c in enumerate(coefs) if abs(c) > 1e-10]
+                    
+                    for i in non_zero_indices:
+                        exp = exponents[i]
+                        coef = coefs[i]
+                        
+                        exp_str = format_fortran_float(exp)
+                        coef_str = format_fortran_float(coef)
+                        
+                        fortran_lines.append(f"        basis_data%exponents({index}) = {exp_str}")
+                        fortran_lines.append(f"        basis_data%{am_label}({index}) = {coef_str}")
+                        index += 1
+            
+            fortran_lines.append(f"        ilast = {index - 1}")
+        
+        fortran_lines.append("")
+    
+    # Default case
+    fortran_lines.append("      case default")
+    fortran_lines.append("        if(maswrk) write(iw,*) 'ERROR: Element not supported in basis', element_number")
+    fortran_lines.append("        ilast = -1")
+    fortran_lines.append("        return")
+    fortran_lines.append("    end select")
+    fortran_lines.append("")
+    fortran_lines.append(f"  end subroutine {worker_name}")
+    fortran_lines.append("")
+    fortran_lines.append(f"end submodule {submodule_name}")
+    
+    return '\n'.join(fortran_lines)
+
+
 if __name__ == "__main__":
     # Define basis set families
     basis_families = {
@@ -496,37 +406,71 @@ if __name__ == "__main__":
                  'def2-qzvp', 'def2-qzvpd', 'def2-qzvpp', 'def2-qzvppd']
     }
 
+
+    # Generate constants module
     constants_module = generate_basis_constants_module(basis_families)
     with open('basis_set_constants.f90', 'w') as f:
         f.write(constants_module)
     print("Generated basis_set_constants.f90")
 
+    # Generate periodic table
     periodic_table_module = generate_periodic_table_module()
     with open('periodic_table.f90', 'w') as f:
         f.write(periodic_table_module)
     print("Generated periodic_table.f90")
+    
+    # # Generate lookup module
+    # lookup_module = generate_basis_lookup_module(basis_families)
+    # with open('src/basis_set_lookup.f90', 'w') as f:
+    #     f.write(lookup_module)
+    # print("Generated basis_set_lookup.f90")
 
-    # Generate files for each family
+    # Generate unified driver module
+    driver_module = generate_unified_driver_module(basis_families)
+    with open('basis_driver.f90', 'w') as f:
+        f.write(driver_module)
+    print("Generated basis_driver.f90")
+
+    # Fetch all basis set data once
+    print("\nFetching all basis sets...")
+    all_basis_data = {}
+    all_elements = set()
+    
     for family_name, basis_sets in basis_families.items():
-        print(f"\n{'='*60}")
-        print(f"Processing family: {family_name}")
-        print(f"{'='*60}")
-        
-        module_name = f"basis_{family_name}"
-        base_subroutine_name = f"get_{family_name}_basis"
-        
-        fortran_files = json_to_gamess_fortran_modular(
-            basis_sets, 
-            elements=None, 
-            module_name=module_name, 
-            base_subroutine_name=base_subroutine_name
-        )
-        
-        # Save each file
-        for filename, code in fortran_files.items():
+        for basis_name in basis_sets:
+            print(f"  Fetching {basis_name}...")
+            basis_result = bse.get_basis(
+                basis_name,
+                elements=None,
+                fmt='qcschema',
+                optimize_general=True
+            )
+            if isinstance(basis_result, str):
+                all_basis_data[basis_name] = json.loads(basis_result)
+            else:
+                all_basis_data[basis_name] = basis_result
+            
+            # Collect elements
+            for key in all_basis_data[basis_name]['center_data'].keys():
+                elem_symbol = key.split('_')[0].upper()
+                all_elements.add(elem_symbol)
+    
+    elements_to_use = sorted(list(all_elements), key=lambda x: get_element_name(x)[1])
+    
+    # Generate individual submodules for each basis set
+    print("\nGenerating basis set submodules...")
+    for family_name, basis_sets in basis_families.items():
+        for basis_name in basis_sets:
+            safe_name = sanitize_basis_name(basis_name)
+            submodule_code = generate_basis_submodule(
+                basis_name, 
+                elements_to_use, 
+                all_basis_data[basis_name]
+            )
+            
+            filename = f"basis_driver_{safe_name}.f90"
             with open(filename, 'w') as f:
-                f.write(code)
-            print(f"Generated {filename}")
-        
-        print(f"Generated {len(fortran_files)} Fortran files for {family_name}")
-
+                f.write(submodule_code)
+            print(f"  Generated {filename}")
+    
+    print(f"\nDone! Generated {len(all_basis_data)} basis set submodules")
