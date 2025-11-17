@@ -1,5 +1,5 @@
 module basis_aug_cc
-  use periodic_table, only: H, HE, LI, BE, B, C, N, O, F, NE, NA, MG, AL, SI, P, S, CL, AR, SC, TI, V, CR, MN, FE, CO, NI, CU, ZN, GA, GE, AS, SE, BR, KR
+  use periodic_table
   use basis_set_data, only: basis_set_type
   use basis_set_constants, only: AUG_CC_PVDZ, AUG_CC_PVTZ, AUG_CC_PVQZ, AUG_CC_PV5Z, AUG_CC_PV6Z
   use iso_fortran_env, only: real64

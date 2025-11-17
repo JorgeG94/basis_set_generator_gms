@@ -1,5 +1,5 @@
 module basis_pcseg
-  use periodic_table, only: H, HE, LI, BE, B, C, N, O, F, NE, NA, MG, AL, SI, P, S, CL, AR, K, CA, SC, TI, V, CR, MN, FE, CO, NI, CU, ZN, GA, GE, AS, SE, BR, KR
+  use periodic_table
   use basis_set_data, only: basis_set_type
   use basis_set_constants, only: PCSEG_0, PCSEG_1, PCSEG_2, PCSEG_3, PCSEG_4
   use iso_fortran_env, only: real64

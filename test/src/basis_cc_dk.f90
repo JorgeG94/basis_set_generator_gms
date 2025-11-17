@@ -1,5 +1,5 @@
 module basis_cc_dk
-  use periodic_table, only: H, HE, LI, BE, B, C, N, O, F, NE, NA, MG, AL, SI, P, S, CL, AR, SC, TI, V, CR, MN, FE, CO, NI, CU, ZN, GA, GE, AS, SE, BR, KR, Y, ZR, NB, MO, TC, RU, RH, PD
+  use periodic_table
   use basis_set_data, only: basis_set_type
   use basis_set_constants, only: CC_PVDZ_DK, CC_PVTZ_DK, CC_PVQZ_DK, CC_PV5Z_DK
   use iso_fortran_env, only: real64

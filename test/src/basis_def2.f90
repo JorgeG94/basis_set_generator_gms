@@ -1,5 +1,5 @@
 module basis_def2
-  use periodic_table, only: H, HE, LI, BE, B, C, N, O, F, NE, NA, MG, AL, SI, P, S, CL, AR, K, CA, SC, TI, V, CR, MN, FE, CO, NI, CU, ZN, GA, GE, AS, SE, BR, KR, RB, SR, Y, ZR, NB, MO, TC, RU, RH, PD, AG, CD, IN, SN, SB, TE, I, XE, CS, BA, LA, CE, PR, ND, PM, SM, EU, GD, TB, DY, HO, ER, TM, YB, LU, HF, TA, W, RE, OS, IR, PT, AU, HG, TL, PB, BI, PO, AT, RN
+  use periodic_table
   use basis_set_data, only: basis_set_type
   use basis_set_constants, only: DEF2_SVP, DEF2_SVPD, DEF2_TZVP, DEF2_TZVPP, DEF2_TZVPD, DEF2_TZVPPD, DEF2_QZVP, DEF2_QZVPD, DEF2_QZVPP, DEF2_QZVPPD
   use iso_fortran_env, only: real64

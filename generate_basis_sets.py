@@ -1,6 +1,84 @@
 import basis_set_exchange as bse
 import json
 
+ELEMENT_ORDER = {
+    # Period 1
+    'H': ('HYDROGEN', 1), 'HE': ('HELIUM', 2),
+    # Period 2
+    'LI': ('LITHIUM', 3), 'BE': ('BERYLLIUM', 4), 'B': ('BORON', 5), 'C': ('CARBON', 6),
+    'N': ('NITROGEN', 7), 'O': ('OXYGEN', 8), 'F': ('FLUORINE', 9), 'NE': ('NEON', 10),
+    # Period 3
+    'NA': ('SODIUM', 11), 'MG': ('MAGNESIUM', 12), 'AL': ('ALUMINUM', 13), 'SI': ('SILICON', 14),
+    'P': ('PHOSPHORUS', 15), 'S': ('SULFUR', 16), 'CL': ('CHLORINE', 17), 'AR': ('ARGON', 18),
+    # Period 4
+    'K': ('POTASSIUM', 19), 'CA': ('CALCIUM', 20), 'SC': ('SCANDIUM', 21), 'TI': ('TITANIUM', 22),
+    'V': ('VANADIUM', 23), 'CR': ('CHROMIUM', 24), 'MN': ('MANGANESE', 25), 'FE': ('IRON', 26),
+    'CO': ('COBALT', 27), 'NI': ('NICKEL', 28), 'CU': ('COPPER', 29), 'ZN': ('ZINC', 30),
+    'GA': ('GALLIUM', 31), 'GE': ('GERMANIUM', 32), 'AS': ('ARSENIC', 33), 'SE': ('SELENIUM', 34),
+    'BR': ('BROMINE', 35), 'KR': ('KRYPTON', 36),
+    # Period 5
+    'RB': ('RUBIDIUM', 37), 'SR': ('STRONTIUM', 38), 'Y': ('YTTRIUM', 39), 'ZR': ('ZIRCONIUM', 40),
+    'NB': ('NIOBIUM', 41), 'MO': ('MOLYBDENUM', 42), 'TC': ('TECHNETIUM', 43), 'RU': ('RUTHENIUM', 44),
+    'RH': ('RHODIUM', 45), 'PD': ('PALLADIUM', 46), 'AG': ('SILVER', 47), 'CD': ('CADMIUM', 48),
+    'IN': ('INDIUM', 49), 'SN': ('TIN', 50), 'SB': ('ANTIMONY', 51), 'TE': ('TELLURIUM', 52),
+    'I': ('IODINE', 53), 'XE': ('XENON', 54),
+    # Period 6
+    'CS': ('CESIUM', 55), 'BA': ('BARIUM', 56),
+    'LA': ('LANTHANUM', 57), 'CE': ('CERIUM', 58), 'PR': ('PRASEODYMIUM', 59), 'ND': ('NEODYMIUM', 60),
+    'PM': ('PROMETHIUM', 61), 'SM': ('SAMARIUM', 62), 'EU': ('EUROPIUM', 63), 'GD': ('GADOLINIUM', 64),
+    'TB': ('TERBIUM', 65), 'DY': ('DYSPROSIUM', 66), 'HO': ('HOLMIUM', 67), 'ER': ('ERBIUM', 68),
+    'TM': ('THULIUM', 69), 'YB': ('YTTERBIUM', 70), 'LU': ('LUTETIUM', 71),
+    'HF': ('HAFNIUM', 72), 'TA': ('TANTALUM', 73), 'W': ('TUNGSTEN', 74), 'RE': ('RHENIUM', 75),
+    'OS': ('OSMIUM', 76), 'IR': ('IRIDIUM', 77), 'PT': ('PLATINUM', 78), 'AU': ('GOLD', 79),
+    'HG': ('MERCURY', 80), 'TL': ('THALLIUM', 81), 'PB': ('LEAD', 82), 'BI': ('BISMUTH', 83),
+    'PO': ('POLONIUM', 84), 'AT': ('ASTATINE', 85), 'RN': ('RADON', 86),
+    # Period 7
+    'FR': ('FRANCIUM', 87), 'RA': ('RADIUM', 88),
+    'AC': ('ACTINIUM', 89), 'TH': ('THORIUM', 90), 'PA': ('PROTACTINIUM', 91), 'U': ('URANIUM', 92),
+    'NP': ('NEPTUNIUM', 93), 'PU': ('PLUTONIUM', 94), 'AM': ('AMERICIUM', 95), 'CM': ('CURIUM', 96),
+    'BK': ('BERKELIUM', 97), 'CF': ('CALIFORNIUM', 98), 'ES': ('EINSTEINIUM', 99), 'FM': ('FERMIUM', 100),
+    'MD': ('MENDELEVIUM', 101), 'NO': ('NOBELIUM', 102), 'LR': ('LAWRENCIUM', 103),
+    'RF': ('RUTHERFORDIUM', 104), 'DB': ('DUBNIUM', 105), 'SG': ('SEABORGIUM', 106), 'BH': ('BOHRIUM', 107),
+    'HS': ('HASSIUM', 108), 'MT': ('MEITNERIUM', 109), 'DS': ('DARMSTADTIUM', 110), 'RG': ('ROENTGENIUM', 111),
+    'CN': ('COPERNICIUM', 112), 'NH': ('NIHONIUM', 113), 'FL': ('FLEROVIUM', 114), 'MC': ('MOSCOVIUM', 115),
+    'LV': ('LIVERMORIUM', 116), 'TS': ('TENNESSINE', 117), 'OG': ('OGANESSON', 118)
+}
+
+def get_element_name(symbol):
+    """Get full element name and atomic number from symbol"""
+    if symbol in ELEMENT_ORDER:
+        return ELEMENT_ORDER[symbol][0], ELEMENT_ORDER[symbol][1]
+    else:
+        # Fallback: uppercase symbol + atomic number placeholder
+        return f"ELEMENT_{symbol.upper()}", 999
+
+def generate_periodic_table_module():
+    """Generate periodic_table.f90 with element constants using full names."""
+    fortran_lines = []
+    
+    fortran_lines.append("module periodic_table")
+    fortran_lines.append("  implicit none")
+    fortran_lines.append("")
+    fortran_lines.append("  ! Element atomic numbers")
+    
+    # Sort elements by atomic number
+    sorted_elements = sorted(ELEMENT_ORDER.items(), key=lambda x: x[1][1])
+    
+    # Group into lines of reasonable length
+    fortran_lines.append("  integer, parameter :: &")
+    
+    param_lines = []
+    for elem_symbol, (full_name, atomic_num) in sorted_elements:
+        param_lines.append(f"    {full_name} = {atomic_num}")
+    
+    # Join with continuation
+    fortran_lines.append(", &\n".join(param_lines))
+    fortran_lines.append("")
+    fortran_lines.append("end module periodic_table")
+    
+    return '\n'.join(fortran_lines)
+
+
 def format_fortran_float(value):
     """
     Format a float in GAMESS Fortran style: 0.XXXXXXD±YY
@@ -97,6 +175,17 @@ def get_atomic_number(symbol):
     }
     return periodic_table.get(symbol.upper(), 999)  # Return 999 for unknown elements
 
+def strip_family_prefix(basis_name, family_name):
+    """Remove family prefix from basis name to avoid redundancy in filenames."""
+    # Convert both to lowercase for comparison
+    basis_lower = basis_name.lower()
+    family_lower = family_name.lower().replace('_', '-')
+    
+    # Try to strip the family prefix
+    if basis_lower.startswith(family_lower + '-'):
+        return basis_name[len(family_lower)+1:]  # +1 for the hyphen
+    return basis_name
+
 def json_to_gamess_fortran_modular(basis_names, elements=None, module_name="basis_ccn_dk", base_subroutine_name="get_ccn_dk_basis"):
     """
     Generate modular GAMESS Fortran module with submodules for parallel compilation.
@@ -160,7 +249,11 @@ def json_to_gamess_fortran_modular(basis_names, elements=None, module_name="basi
     
     # Generate submodules for each zeta level
     for n_zeta_idx, basis_name in enumerate(basis_names, start=1):
-        basis_const_name = sanitize_basis_name(basis_name)
+        if family_name:
+            short_name = strip_family_prefix(basis_name, family_name)
+        else:
+            short_name = basis_name
+        basis_const_name = sanitize_basis_name(short_name)
         worker_name = f"{base_subroutine_name}_{basis_const_name.lower()}"
         submodule_name = f"{module_name}_{basis_const_name.lower()}"
         
@@ -180,7 +273,7 @@ def generate_main_module(module_name, base_subroutine_name, elements, basis_name
     
     # Module header
     fortran_lines.append(f"module {module_name}")
-    fortran_lines.append(f"  use periodic_table, only: {elem_imports}")
+    fortran_lines.append(f"  use periodic_table")
     fortran_lines.append("  use basis_set_data, only: basis_set_type")
     fortran_lines.append("  use basis_set_constants, only: " + ', '.join([f"{sanitize_basis_name(basis).upper()}" for basis in basis_names]))
     fortran_lines.append("  use iso_fortran_env, only: real64")
@@ -287,8 +380,9 @@ def generate_worker_submodule(parent_module, submodule_name, basis_name, basis_c
     # Process each element
     for elem_symbol in elements:
         elem_name = elem_symbol.upper()
+        full_name, atomic_num = get_element_name(elem_symbol)
         
-        fortran_lines.append(f"      case({elem_name})")
+        fortran_lines.append(f"      case({full_name})")
         
         # Find the correct key for this element
         element_key = None
@@ -300,7 +394,7 @@ def generate_worker_submodule(parent_module, submodule_name, basis_name, basis_c
         
         if element_key is None:
             # Element not available in this basis set
-            fortran_lines.append(f"        if(maswrk) write(iw,*) 'ERROR: {basis_name} basis not available for element {elem_name}'")
+            fortran_lines.append(f"        if(maswrk) write(iw,*) 'ERROR: {basis_name} basis not available for element {full_name}'")
             fortran_lines.append("        ilast = -1")
             fortran_lines.append("        return")
         else:
@@ -406,6 +500,11 @@ if __name__ == "__main__":
     with open('basis_set_constants.f90', 'w') as f:
         f.write(constants_module)
     print("Generated basis_set_constants.f90")
+
+    periodic_table_module = generate_periodic_table_module()
+    with open('periodic_table.f90', 'w') as f:
+        f.write(periodic_table_module)
+    print("Generated periodic_table.f90")
 
     # Generate files for each family
     for family_name, basis_sets in basis_families.items():

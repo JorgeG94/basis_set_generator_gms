@@ -15,7 +15,7 @@ contains
 
     select case (element_number)
 
-      case(H)
+      case(HYDROGEN)
         basis_data%exponents(1) = 0.3386500D+02
         basis_data%s_coef(1) = 0.2549380D-01
         basis_data%exponents(2) = 0.5094790D+01
@@ -30,7 +30,7 @@ contains
         basis_data%p_coef(6) = 0.1000000D+01
         ilast = 6
 
-      case(HE)
+      case(HELIUM)
         basis_data%exponents(1) = 0.9812430D+02
         basis_data%s_coef(1) = 0.2874520D-01
         basis_data%exponents(2) = 0.1476890D+02
@@ -45,7 +45,7 @@ contains
         basis_data%p_coef(6) = 0.1000000D+01
         ilast = 6
 
-      case(LI)
+      case(LITHIUM)
         basis_data%exponents(1) = 0.9004600D+03
         basis_data%s_coef(1) = 0.2287040D-02
         basis_data%exponents(2) = 0.1344330D+03
@@ -82,7 +82,7 @@ contains
         basis_data%d_coef(17) = 0.1000000D+01
         ilast = 17
 
-      case(BE)
+      case(BERYLLIUM)
         basis_data%exponents(1) = 0.1682800D+04
         basis_data%s_coef(1) = 0.2285740D-02
         basis_data%exponents(2) = 0.2517150D+03
@@ -119,7 +119,7 @@ contains
         basis_data%d_coef(17) = 0.1000000D+01
         ilast = 17
 
-      case(B)
+      case(BORON)
         basis_data%exponents(1) = 0.2858890D+04
         basis_data%s_coef(1) = 0.2153750D-02
         basis_data%exponents(2) = 0.4281400D+03
@@ -156,7 +156,7 @@ contains
         basis_data%d_coef(17) = 0.1000000D+01
         ilast = 17
 
-      case(C)
+      case(CARBON)
         basis_data%exponents(1) = 0.4563240D+04
         basis_data%s_coef(1) = 0.1966650D-02
         basis_data%exponents(2) = 0.6820240D+03
@@ -193,7 +193,7 @@ contains
         basis_data%d_coef(17) = 0.1000000D+01
         ilast = 17
 
-      case(N)
+      case(NITROGEN)
         basis_data%exponents(1) = 0.6293480D+04
         basis_data%s_coef(1) = 0.1969790D-02
         basis_data%exponents(2) = 0.9490440D+03
@@ -230,7 +230,7 @@ contains
         basis_data%d_coef(17) = 0.1000000D+01
         ilast = 17
 
-      case(O)
+      case(OXYGEN)
         basis_data%exponents(1) = 0.8588500D+04
         basis_data%s_coef(1) = 0.1895150D-02
         basis_data%exponents(2) = 0.1297230D+04
@@ -267,7 +267,7 @@ contains
         basis_data%d_coef(17) = 0.1000000D+01
         ilast = 17
 
-      case(F)
+      case(FLUORINE)
         basis_data%exponents(1) = 0.1142710D+05
         basis_data%s_coef(1) = 0.1800930D-02
         basis_data%exponents(2) = 0.1722350D+04
@@ -304,7 +304,7 @@ contains
         basis_data%d_coef(17) = 0.1000000D+01
         ilast = 17
 
-      case(NE)
+      case(NEON)
         basis_data%exponents(1) = 0.1399570D+05
         basis_data%s_coef(1) = 0.1832760D-02
         basis_data%exponents(2) = 0.2117100D+04
@@ -341,7 +341,7 @@ contains
         basis_data%d_coef(17) = 0.1000000D+01
         ilast = 17
 
-      case(NA)
+      case(SODIUM)
         basis_data%exponents(1) = 0.3616640D+05
         basis_data%s_coef(1) = 0.1032000D-02
         basis_data%exponents(2) = 0.5372580D+04
@@ -390,7 +390,7 @@ contains
         basis_data%d_coef(23) = 0.1000000D+01
         ilast = 23
 
-      case(MG)
+      case(MAGNESIUM)
         basis_data%exponents(1) = 0.4386650D+05
         basis_data%s_coef(1) = 0.9180000D-03
         basis_data%exponents(2) = 0.6605370D+04
@@ -439,7 +439,7 @@ contains
         basis_data%d_coef(23) = 0.1000000D+01
         ilast = 23
 
-      case(AL)
+      case(ALUMINUM)
         basis_data%exponents(1) = 0.5486649D+05
         basis_data%s_coef(1) = 0.8390000D-03
         basis_data%exponents(2) = 0.8211766D+04
@@ -488,7 +488,7 @@ contains
         basis_data%d_coef(23) = 0.1000000D+01
         ilast = 23
 
-      case(SI)
+      case(SILICON)
         basis_data%exponents(1) = 0.6937923D+05
         basis_data%s_coef(1) = 0.7570000D-03
         basis_data%exponents(2) = 0.1035494D+05
@@ -537,7 +537,7 @@ contains
         basis_data%d_coef(23) = 0.1000000D+01
         ilast = 23
 
-      case(P)
+      case(PHOSPHORUS)
         basis_data%exponents(1) = 0.7749240D+05
         basis_data%s_coef(1) = 0.7810000D-03
         basis_data%exponents(2) = 0.1160580D+05
@@ -586,7 +586,7 @@ contains
         basis_data%d_coef(23) = 0.1000000D+01
         ilast = 23
 
-      case(S)
+      case(SULFUR)
         basis_data%exponents(1) = 0.9341340D+05
         basis_data%s_coef(1) = 0.7430000D-03
         basis_data%exponents(2) = 0.1396170D+05
@@ -635,7 +635,7 @@ contains
         basis_data%d_coef(23) = 0.1000000D+01
         ilast = 23
 
-      case(CL)
+      case(CHLORINE)
         basis_data%exponents(1) = 0.1058190D+06
         basis_data%s_coef(1) = 0.7380000D-03
         basis_data%exponents(2) = 0.1587200D+05
@@ -686,7 +686,7 @@ contains
         basis_data%d_coef(24) = 0.1000000D+01
         ilast = 24
 
-      case(AR)
+      case(ARGON)
         basis_data%exponents(1) = 0.1180224D+06
         basis_data%s_coef(1) = 0.7470000D-03
         basis_data%exponents(2) = 0.1768354D+05
@@ -737,7 +737,7 @@ contains
         basis_data%d_coef(24) = 0.1000000D+01
         ilast = 24
 
-      case(K)
+      case(POTASSIUM)
         basis_data%exponents(1) = 0.1825940D+06
         basis_data%s_coef(1) = 0.2277470D-03
         basis_data%exponents(2) = 0.2736900D+05
@@ -798,7 +798,7 @@ contains
         basis_data%d_coef(29) = 0.1000000D+01
         ilast = 29
 
-      case(CA)
+      case(CALCIUM)
         basis_data%exponents(1) = 0.2026990D+06
         basis_data%s_coef(1) = 0.2229640D-03
         basis_data%exponents(2) = 0.3038250D+05
@@ -859,7 +859,7 @@ contains
         basis_data%d_coef(29) = 0.1000000D+01
         ilast = 29
 
-      case(GA)
+      case(GALLIUM)
         basis_data%exponents(1) = 0.3338000D+06
         basis_data%s_coef(1) = 0.8380500D-03
         basis_data%exponents(2) = 0.5010000D+05
@@ -930,7 +930,7 @@ contains
         basis_data%d_coef(34) = 0.1000000D+01
         ilast = 34
 
-      case(GE)
+      case(GERMANIUM)
         basis_data%exponents(1) = 0.3575000D+06
         basis_data%s_coef(1) = 0.8389800D-03
         basis_data%exponents(2) = 0.5367000D+05
@@ -1001,7 +1001,7 @@ contains
         basis_data%d_coef(34) = 0.1000000D+01
         ilast = 34
 
-      case(AS)
+      case(ARSENIC)
         basis_data%exponents(1) = 0.3812000D+06
         basis_data%s_coef(1) = 0.8332700D-03
         basis_data%exponents(2) = 0.5724000D+05
@@ -1072,7 +1072,7 @@ contains
         basis_data%d_coef(34) = 0.1000000D+01
         ilast = 34
 
-      case(SE)
+      case(SELENIUM)
         basis_data%exponents(1) = 0.4054000D+06
         basis_data%s_coef(1) = 0.8310000D-03
         basis_data%exponents(2) = 0.6085000D+05
@@ -1143,7 +1143,7 @@ contains
         basis_data%d_coef(34) = 0.1000000D+01
         ilast = 34
 
-      case(BR)
+      case(BROMINE)
         basis_data%exponents(1) = 0.4397000D+06
         basis_data%s_coef(1) = 0.8130000D-03
         basis_data%exponents(2) = 0.6603000D+05
@@ -1214,7 +1214,7 @@ contains
         basis_data%d_coef(34) = 0.1000000D+01
         ilast = 34
 
-      case(KR)
+      case(KRYPTON)
         basis_data%exponents(1) = 0.4562000D+06
         basis_data%s_coef(1) = 0.8111000D-03
         basis_data%exponents(2) = 0.6846000D+05
@@ -1285,7 +1285,7 @@ contains
         basis_data%d_coef(34) = 0.1000000D+01
         ilast = 34
 
-      case(I)
+      case(IODINE)
         basis_data%exponents(1) = 0.4447500D+06
         basis_data%s_coef(1) = 0.8900000D-03
         basis_data%exponents(2) = 0.6612700D+05

@@ -15,7 +15,7 @@ contains
 
     select case (element_number)
 
-      case(H)
+      case(HYDROGEN)
         basis_data%exponents(1) = 0.1873114D+02
         basis_data%s_coef(1) = 0.3349460D-01
         basis_data%exponents(2) = 0.2825394D+01
@@ -34,7 +34,7 @@ contains
         basis_data%d_coef(8) = 0.1000000D+01
         ilast = 8
 
-      case(HE)
+      case(HELIUM)
         basis_data%exponents(1) = 0.3842163D+02
         basis_data%s_coef(1) = 0.2376600D-01
         basis_data%exponents(2) = 0.5778030D+01
@@ -53,7 +53,7 @@ contains
         basis_data%d_coef(8) = 0.1000000D+01
         ilast = 8
 
-      case(LI)
+      case(LITHIUM)
         basis_data%exponents(1) = 0.6424189D+03
         basis_data%s_coef(1) = 0.2142600D-02
         basis_data%exponents(2) = 0.9679851D+02
@@ -92,7 +92,7 @@ contains
         basis_data%f_coef(18) = 0.1000000D+01
         ilast = 18
 
-      case(BE)
+      case(BERYLLIUM)
         basis_data%exponents(1) = 0.1264586D+04
         basis_data%s_coef(1) = 0.1944800D-02
         basis_data%exponents(2) = 0.1899368D+03
@@ -131,7 +131,7 @@ contains
         basis_data%f_coef(18) = 0.1000000D+01
         ilast = 18
 
-      case(B)
+      case(BORON)
         basis_data%exponents(1) = 0.2068882D+04
         basis_data%s_coef(1) = 0.1866300D-02
         basis_data%exponents(2) = 0.3106496D+03
@@ -170,7 +170,7 @@ contains
         basis_data%f_coef(18) = 0.1000000D+01
         ilast = 18
 
-      case(C)
+      case(CARBON)
         basis_data%exponents(1) = 0.3047525D+04
         basis_data%s_coef(1) = 0.1834700D-02
         basis_data%exponents(2) = 0.4573695D+03
@@ -209,7 +209,7 @@ contains
         basis_data%f_coef(18) = 0.1000000D+01
         ilast = 18
 
-      case(N)
+      case(NITROGEN)
         basis_data%exponents(1) = 0.4173511D+04
         basis_data%s_coef(1) = 0.1834800D-02
         basis_data%exponents(2) = 0.6274579D+03
@@ -248,7 +248,7 @@ contains
         basis_data%f_coef(18) = 0.1000000D+01
         ilast = 18
 
-      case(O)
+      case(OXYGEN)
         basis_data%exponents(1) = 0.5484672D+04
         basis_data%s_coef(1) = 0.1831100D-02
         basis_data%exponents(2) = 0.8252349D+03
@@ -287,7 +287,7 @@ contains
         basis_data%f_coef(18) = 0.1000000D+01
         ilast = 18
 
-      case(F)
+      case(FLUORINE)
         basis_data%exponents(1) = 0.7001713D+04
         basis_data%s_coef(1) = 0.1819617D-02
         basis_data%exponents(2) = 0.1051366D+04
@@ -326,7 +326,7 @@ contains
         basis_data%f_coef(18) = 0.1000000D+01
         ilast = 18
 
-      case(NE)
+      case(NEON)
         basis_data%exponents(1) = 0.8425852D+04
         basis_data%s_coef(1) = 0.1884348D-02
         basis_data%exponents(2) = 0.1268519D+04
@@ -365,7 +365,7 @@ contains
         basis_data%f_coef(18) = 0.1000000D+01
         ilast = 18
 
-      case(NA)
+      case(SODIUM)
         basis_data%exponents(1) = 0.9993200D+04
         basis_data%s_coef(1) = 0.1937700D-02
         basis_data%exponents(2) = 0.1499890D+04
@@ -428,7 +428,7 @@ contains
         basis_data%f_coef(30) = 0.1000000D+01
         ilast = 30
 
-      case(MG)
+      case(MAGNESIUM)
         basis_data%exponents(1) = 0.1172280D+05
         basis_data%s_coef(1) = 0.1977800D-02
         basis_data%exponents(2) = 0.1759930D+04
@@ -491,7 +491,7 @@ contains
         basis_data%f_coef(30) = 0.1000000D+01
         ilast = 30
 
-      case(AL)
+      case(ALUMINUM)
         basis_data%exponents(1) = 0.1398310D+05
         basis_data%s_coef(1) = 0.1942670D-02
         basis_data%exponents(2) = 0.2098750D+04
@@ -554,7 +554,7 @@ contains
         basis_data%f_coef(30) = 0.1000000D+01
         ilast = 30
 
-      case(SI)
+      case(SILICON)
         basis_data%exponents(1) = 0.1611590D+05
         basis_data%s_coef(1) = 0.1959480D-02
         basis_data%exponents(2) = 0.2425580D+04
@@ -617,7 +617,7 @@ contains
         basis_data%f_coef(30) = 0.1000000D+01
         ilast = 30
 
-      case(P)
+      case(PHOSPHORUS)
         basis_data%exponents(1) = 0.1941330D+05
         basis_data%s_coef(1) = 0.1851600D-02
         basis_data%exponents(2) = 0.2909420D+04
@@ -680,7 +680,7 @@ contains
         basis_data%f_coef(30) = 0.1000000D+01
         ilast = 30
 
-      case(S)
+      case(SULFUR)
         basis_data%exponents(1) = 0.2191710D+05
         basis_data%s_coef(1) = 0.1869000D-02
         basis_data%exponents(2) = 0.3301490D+04
@@ -743,7 +743,7 @@ contains
         basis_data%f_coef(30) = 0.1000000D+01
         ilast = 30
 
-      case(CL)
+      case(CHLORINE)
         basis_data%exponents(1) = 0.2518010D+05
         basis_data%s_coef(1) = 0.1833000D-02
         basis_data%exponents(2) = 0.3780350D+04
@@ -806,7 +806,7 @@ contains
         basis_data%f_coef(30) = 0.1000000D+01
         ilast = 30
 
-      case(AR)
+      case(ARGON)
         basis_data%exponents(1) = 0.2834830D+05
         basis_data%s_coef(1) = 0.1825260D-02
         basis_data%exponents(2) = 0.4257620D+04
@@ -869,93 +869,93 @@ contains
         basis_data%f_coef(30) = 0.1000000D+01
         ilast = 30
 
-      case(K)
-        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element K'
+      case(POTASSIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element POTASSIUM'
         ilast = -1
         return
 
-      case(CA)
-        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element CA'
+      case(CALCIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element CALCIUM'
         ilast = -1
         return
 
-      case(SC)
-        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element SC'
+      case(SCANDIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element SCANDIUM'
         ilast = -1
         return
 
-      case(TI)
-        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element TI'
+      case(TITANIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element TITANIUM'
         ilast = -1
         return
 
-      case(V)
-        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element V'
+      case(VANADIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element VANADIUM'
         ilast = -1
         return
 
-      case(CR)
-        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element CR'
+      case(CHROMIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element CHROMIUM'
         ilast = -1
         return
 
-      case(MN)
-        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element MN'
+      case(MANGANESE)
+        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element MANGANESE'
         ilast = -1
         return
 
-      case(FE)
-        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element FE'
+      case(IRON)
+        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element IRON'
         ilast = -1
         return
 
-      case(CO)
-        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element CO'
+      case(COBALT)
+        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element COBALT'
         ilast = -1
         return
 
-      case(NI)
-        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element NI'
+      case(NICKEL)
+        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element NICKEL'
         ilast = -1
         return
 
-      case(CU)
-        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element CU'
+      case(COPPER)
+        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element COPPER'
         ilast = -1
         return
 
-      case(ZN)
-        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element ZN'
+      case(ZINC)
+        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element ZINC'
         ilast = -1
         return
 
-      case(GA)
-        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element GA'
+      case(GALLIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element GALLIUM'
         ilast = -1
         return
 
-      case(GE)
-        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element GE'
+      case(GERMANIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element GERMANIUM'
         ilast = -1
         return
 
-      case(AS)
-        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element AS'
+      case(ARSENIC)
+        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element ARSENIC'
         ilast = -1
         return
 
-      case(SE)
-        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element SE'
+      case(SELENIUM)
+        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element SELENIUM'
         ilast = -1
         return
 
-      case(BR)
-        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element BR'
+      case(BROMINE)
+        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element BROMINE'
         ilast = -1
         return
 
-      case(KR)
-        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element KR'
+      case(KRYPTON)
+        if(maswrk) write(iw,*) 'ERROR: 6-31G(3df,3pd) basis not available for element KRYPTON'
         ilast = -1
         return
 

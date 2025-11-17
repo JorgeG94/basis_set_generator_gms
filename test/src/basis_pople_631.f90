@@ -1,5 +1,5 @@
 module basis_pople_631
-  use periodic_table, only: H, HE, LI, BE, B, C, N, O, F, NE, NA, MG, AL, SI, P, S, CL, AR, K, CA, SC, TI, V, CR, MN, FE, CO, NI, CU, ZN, GA, GE, AS, SE, BR, KR
+  use periodic_table
   use basis_set_data, only: basis_set_type
   use basis_set_constants, only: B_6_31G, B_6_31PLUSG, B_6_31PLUSPLUSG, B_6_31GSTAR, B_6_31PLUSGSTAR, B_6_31PLUSPLUSGSTAR, B_6_31GSTARSTAR, B_6_31PLUSGSTARSTAR, B_6_31PLUSPLUSGSTARSTAR, B_6_31G_2DF_P, B_6_31G_3DF_3PD
   use iso_fortran_env, only: real64

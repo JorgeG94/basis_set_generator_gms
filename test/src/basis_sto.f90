@@ -1,5 +1,5 @@
 module basis_sto
-  use periodic_table, only: H, HE, LI, BE, B, C, N, O, F, NE, NA, MG, AL, SI, P, S, CL, AR, K, CA, SC, TI, V, CR, MN, FE, CO, NI, CU, ZN, GA, GE, AS, SE, BR, KR, RB, SR, Y, ZR, NB, MO, TC, RU, RH, PD, AG, CD, IN, SN, SB, TE, I, XE
+  use periodic_table
   use basis_set_data, only: basis_set_type
   use basis_set_constants, only: STO_3G, STO_4G, STO_5G, STO_6G
   use iso_fortran_env, only: real64
