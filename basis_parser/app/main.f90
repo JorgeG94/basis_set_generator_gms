@@ -1,5 +1,6 @@
 program main
-  use gms_basis_reader, only: say_hello, classify_line, parse_element_basis
+  use gms_basis_reader, only: say_hello, classify_line, parse_element_basis, &
+  build_molecular_basis
   use  gms_cgto
   use iso_fortran_env, only: real64
   implicit none
@@ -22,6 +23,8 @@ program main
   call test_classify_lines()
 
   call test_parse_element()
+
+  call test_h2_molecule()
 
 contains
 
@@ -94,5 +97,51 @@ contains
     call h_basis%destroy()
     
 end subroutine test_parse_element
+
+subroutine test_h2_molecule()
+    type(molecular_basis_type) :: h2_basis
+    integer :: stat, iatom, ishell, ifunc
+    character(len=:), allocatable :: errmsg
+    character(len=*), dimension(2), parameter :: h2_atoms = ["HYDROGEN", "HYDROGEN"]
+    character(len=1), dimension(0:6) :: ang_mom_names = ['S', 'P', 'D', 'F', 'G', 'H', 'I']
+
+    print *, "Testing H2 molecular basis:"
+    print *, "============================"
+    print *
+
+    call build_molecular_basis(test_basis, h2_atoms, h2_basis, stat, errmsg)
+
+    if (stat /= 0) then
+        print *, "ERROR: ", errmsg
+        return
+    end if
+
+    print *, "Successfully built molecular basis for H2"
+    print *, "Number of atoms: ", h2_basis%nelements
+    print *, "Total basis functions for H2: ", h2_basis%num_basis_functions()
+    print *
+
+    ! Print basis for each atom
+    do iatom = 1, h2_basis%nelements
+        print '(a,i0,a,a)', "Atom ", iatom, ": ", trim(h2_basis%elements(iatom)%element)
+        print '(a,i0,a)', "  Number of shells: ", h2_basis%elements(iatom)%nshells
+
+        do ishell = 1, h2_basis%elements(iatom)%nshells
+            print '(a,i0,a,a,a,i0,a)', "  Shell ", ishell, " (", &
+                ang_mom_names(h2_basis%elements(iatom)%shells(ishell)%l), &
+                "): ", h2_basis%elements(iatom)%shells(ishell)%nfunc, " primitives"
+
+            do ifunc = 1, h2_basis%elements(iatom)%shells(ishell)%nfunc
+                print '(4x,i2,2x,f12.6,2x,f12.6)', ifunc, &
+                    h2_basis%elements(iatom)%shells(ishell)%exponents(ifunc), &
+                    h2_basis%elements(iatom)%shells(ishell)%coefficients(ifunc)
+            end do
+        end do
+        print *
+    end do
+
+    call h2_basis%destroy()
+
+end subroutine test_h2_molecule
 
 end program main

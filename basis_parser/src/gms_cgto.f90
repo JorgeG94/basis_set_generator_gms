@@ -3,7 +3,7 @@ use iso_fortran_env, only: real64
 implicit none 
 private 
 
-public :: cgto_type, atomic_basis_type
+public :: cgto_type, atomic_basis_type, molecular_basis_type
 
   type :: cgto_type
       integer :: l                                    
@@ -17,6 +17,7 @@ public :: cgto_type, atomic_basis_type
   contains
       procedure :: allocate_arrays => cgto_allocate_arrays
       procedure :: destroy => cgto_destroy
+      procedure :: num_basis_functions => cgto_num_basis_functions
   end type cgto_type
 
   type :: atomic_basis_type
@@ -29,6 +30,7 @@ public :: cgto_type, atomic_basis_type
   contains 
     procedure :: allocate_shells => allocate_basis_shells
     procedure :: destroy => atomic_basis_destroy
+    procedure :: num_basis_functions => atomic_basis_num_basis_functions
   end type atomic_basis_type
 
   type :: molecular_basis_type
@@ -37,6 +39,7 @@ public :: cgto_type, atomic_basis_type
   contains 
     procedure :: allocate_elements => basis_set_allocate_elements
     procedure :: destroy => basis_set_destroy
+    procedure :: num_basis_functions => molecular_basis_num_basis_functions
   end type molecular_basis_type
 
 contains 
@@ -105,5 +108,38 @@ pure subroutine basis_set_destroy(self)
 
   self%nelements = 0 
 end subroutine basis_set_destroy
+
+!> Get number of basis functions in a shell (Cartesian)
+pure function cgto_num_basis_functions(self) result(nbf)
+    class(cgto_type), intent(in) :: self
+    integer :: nbf
+
+    ! Cartesian: (l+1)*(l+2)/2
+    nbf = (self%l + 1) * (self%l + 2) / 2
+end function cgto_num_basis_functions
+
+!> Get total number of basis functions for an atom
+pure function atomic_basis_num_basis_functions(self) result(nbf)
+    class(atomic_basis_type), intent(in) :: self
+    integer :: nbf
+    integer :: ishell
+
+    nbf = 0
+    do ishell = 1, self%nshells
+        nbf = nbf + self%shells(ishell)%num_basis_functions()
+    end do
+end function atomic_basis_num_basis_functions
+
+!> Get total number of basis functions for the molecule
+pure function molecular_basis_num_basis_functions(self) result(nbf)
+    class(molecular_basis_type), intent(in) :: self
+    integer :: nbf
+    integer :: iatom
+
+    nbf = 0
+    do iatom = 1, self%nelements
+        nbf = nbf + self%elements(iatom)%num_basis_functions()
+    end do
+end function molecular_basis_num_basis_functions
 
 end module gms_cgto

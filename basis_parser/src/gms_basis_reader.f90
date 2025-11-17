@@ -7,6 +7,7 @@ use iso_fortran_env, only: real64
   public :: say_hello
   public :: classify_line
   public :: parse_element_basis
+  public :: build_molecular_basis
 
     integer, parameter, public :: LINE_UNKNOWN = 0
     integer, parameter, public :: LINE_ATOM = 1
@@ -390,5 +391,34 @@ subroutine fill_element_basis(basis_string, element_name, atom_basis, stat, errm
     end do
     
 end subroutine fill_element_basis
+
+!> Build molecular basis from geometry and basis file
+subroutine build_molecular_basis(basis_string, element_names, mol_basis, stat, errmsg)
+    character(len=*), intent(in) :: basis_string
+    character(len=*), intent(in) :: element_names(:)  !! Element for each atom in geometry order
+    type(molecular_basis_type), intent(out) :: mol_basis
+    integer, intent(out) :: stat
+    character(len=:), allocatable, intent(out) :: errmsg
+
+    integer :: iatom, natoms
+
+    stat = 0
+    natoms = size(element_names)
+
+    ! Allocate molecular basis
+    call mol_basis%allocate_elements(natoms)
+
+    ! Parse basis for each atom
+    do iatom = 1, natoms
+        call parse_element_basis(basis_string, element_names(iatom), &
+                                 mol_basis%elements(iatom), stat, errmsg)
+        if (stat /= 0) then
+            errmsg = "Failed to parse basis for atom " // trim(element_names(iatom)) // &
+                     ": " // errmsg
+            return
+        end if
+    end do
+
+end subroutine build_molecular_basis
 
 end module gms_basis_reader
