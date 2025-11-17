@@ -2,7 +2,7 @@ module basis_set_data
   use iso_fortran_env, only: real64
   implicit none
   
-  integer, parameter :: nbas_dims = 417
+  integer, parameter :: nbas_dims = 424
   type :: basis_set_type
     real(real64) :: exponents(nbas_dims)
     real(real64) :: s_coef(nbas_dims)

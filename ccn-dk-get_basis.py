@@ -165,7 +165,7 @@ def generate_main_module(module_name, base_subroutine_name, elements, basis_name
     # Module header
     fortran_lines.append(f"module {module_name}")
     fortran_lines.append(f"  use periodic_table, only: {elem_imports}")
-    fortran_lines.append("  use basis_types, only: n_zeta_to_basis, PVDZ, PVTZ, PVQZ, PV5Z")
+    fortran_lines.append("  use basis_types, only: n_zeta_to_basis, PVDZ, PVTZ, PVQZ, PV5Z, PV6Z")
     fortran_lines.append("  use basis_set_data, only: basis_set_type")
     fortran_lines.append("  use iso_fortran_env, only: real64")
     fortran_lines.append("  implicit none")
@@ -338,9 +338,10 @@ def generate_worker_submodule(parent_module, submodule_name, basis_name, basis_c
 
 # Example usage
 if __name__ == "__main__":
-    basis_sets = ['cc-pvdz-dk', 'cc-pvtz-dk', 'cc-pvqz-dk', 'cc-pv5z-dk']
+    #basis_sets = ['aug-cc-pvdz-dk', 'aug-cc-pvtz-dk', 'aug-cc-pvqz-dk', 'aug-cc-pv5z-dk']
+    basis_sets = ['aug-cc-pvdz', 'aug-cc-pvtz', 'aug-cc-pvqz', 'aug-cc-pv5z', 'aug-cc-pv6z']
     
-    fortran_files = json_to_gamess_fortran_modular(basis_sets, elements=None)
+    fortran_files = json_to_gamess_fortran_modular(basis_sets, elements=None, module_name="basis_aug_ccn", base_subroutine_name="get_aug_ccn_basis")
     
     # Save each file
     for filename, code in fortran_files.items():
