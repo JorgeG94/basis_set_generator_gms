@@ -392,33 +392,119 @@ subroutine fill_element_basis(basis_string, element_name, atom_basis, stat, errm
     
 end subroutine fill_element_basis
 
+!> Find unique strings in an array
+!! Returns array of unique strings and count
+subroutine find_unique_strings(input_array, unique_array, nunique)
+    character(len=*), intent(in) :: input_array(:)
+    character(len=:), allocatable, intent(out) :: unique_array(:)
+    integer, intent(out) :: nunique
+
+    integer :: i, j, n
+    logical :: is_unique
+    character(len=len(input_array)), allocatable :: temp_unique(:)
+
+    n = size(input_array)
+    allocate(temp_unique(n))  ! Max possible size
+    nunique = 0
+
+    do i = 1, n
+        is_unique = .true.
+
+        ! Check if we've already seen this string
+        do j = 1, nunique
+            if (trim(adjustl(input_array(i))) == trim(adjustl(temp_unique(j)))) then
+                is_unique = .false.
+                exit
+            end if
+        end do
+
+        if (is_unique) then
+            nunique = nunique + 1
+            temp_unique(nunique) = input_array(i)
+        end if
+    end do
+
+    ! Allocate output array with exact size and copy
+    allocate(character(len=len(input_array)) :: unique_array(nunique))
+    unique_array = temp_unique(1:nunique)
+
+end subroutine find_unique_strings
+
+subroutine copy_atomic_basis(source, dest)
+    type(atomic_basis_type), intent(in) :: source
+    type(atomic_basis_type), intent(out) :: dest
+    integer :: ishell
+
+    dest%element = source%element
+    call dest%allocate_shells(source%nshells)
+
+    do ishell = 1, source%nshells
+        dest%shells(ishell)%l = source%shells(ishell)%l
+        call dest%shells(ishell)%allocate_arrays(source%shells(ishell)%nfunc)
+        dest%shells(ishell)%exponents = source%shells(ishell)%exponents
+        dest%shells(ishell)%coefficients = source%shells(ishell)%coefficients
+    end do
+
+end subroutine copy_atomic_basis
+
 !> Build molecular basis from geometry and basis file
+!! Only parses unique elements, then copies basis data to atoms
 subroutine build_molecular_basis(basis_string, element_names, mol_basis, stat, errmsg)
     character(len=*), intent(in) :: basis_string
     character(len=*), intent(in) :: element_names(:)  !! Element for each atom in geometry order
     type(molecular_basis_type), intent(out) :: mol_basis
     integer, intent(out) :: stat
     character(len=:), allocatable, intent(out) :: errmsg
-
-    integer :: iatom, natoms
-
+    
+    integer :: iatom, natoms, iunique, nunique
+    character(len=:), allocatable :: unique_elements(:)
+    type(atomic_basis_type), allocatable :: unique_bases(:)
+    integer :: match_idx
+    
     stat = 0
     natoms = size(element_names)
-
-    ! Allocate molecular basis
-    call mol_basis%allocate_elements(natoms)
-
-    ! Parse basis for each atom
-    do iatom = 1, natoms
-        call parse_element_basis(basis_string, element_names(iatom), &
-                                 mol_basis%elements(iatom), stat, errmsg)
+    
+    ! Find unique elements
+    call find_unique_strings(element_names, unique_elements, nunique)
+    
+    print *, "Found ", nunique, " unique elements out of ", natoms, " atoms"
+    
+    ! Allocate for unique bases
+    allocate(unique_bases(nunique))
+    
+    ! Parse basis for each unique element
+    do iunique = 1, nunique
+        print *, "Parsing basis for: ", trim(unique_elements(iunique))
+        call parse_element_basis(basis_string, unique_elements(iunique), &
+                                 unique_bases(iunique), stat, errmsg)
         if (stat /= 0) then
-            errmsg = "Failed to parse basis for atom " // trim(element_names(iatom)) // &
+            errmsg = "Failed to parse basis for element " // trim(unique_elements(iunique)) // &
                      ": " // errmsg
             return
         end if
     end do
-
+    
+    ! Allocate molecular basis and assign to each atom
+    call mol_basis%allocate_elements(natoms)
+    
+    do iatom = 1, natoms
+        ! Find which unique element this atom corresponds to
+        do iunique = 1, nunique
+            if (trim(adjustl(element_names(iatom))) == trim(adjustl(unique_elements(iunique)))) then
+                match_idx = iunique
+                exit
+            end if
+        end do
+        
+        ! Copy the basis data
+        call copy_atomic_basis(unique_bases(match_idx), mol_basis%elements(iatom))
+    end do
+    
+    ! Clean up
+    do iunique = 1, nunique
+        call unique_bases(iunique)%destroy()
+    end do
+    
 end subroutine build_molecular_basis
 
 end module gms_basis_reader

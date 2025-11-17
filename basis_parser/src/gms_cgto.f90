@@ -35,7 +35,9 @@ public :: cgto_type, atomic_basis_type, molecular_basis_type
 
   type :: molecular_basis_type
     type(atomic_basis_type), allocatable :: elements(:)
+      !! array of atomic basis types
     integer :: nelements
+      !! total number of atoms/elements in a molecule
   contains 
     procedure :: allocate_elements => basis_set_allocate_elements
     procedure :: destroy => basis_set_destroy
