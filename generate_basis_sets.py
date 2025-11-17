@@ -389,6 +389,97 @@ def generate_basis_submodule(basis_name, elements, basis_dict):
     
     return '\n'.join(fortran_lines)
 
+def generate_basis_lookup_module(basis_families):
+    """Generate a module to convert basis name strings to constants."""
+    fortran_lines = []
+    
+    fortran_lines.append("module basis_set_lookup")
+    fortran_lines.append("  use basis_set_constants")
+    fortran_lines.append("  implicit none")
+    fortran_lines.append("  private")
+    fortran_lines.append("  public :: basis_name_to_type, get_basis_info")
+    fortran_lines.append("")
+    fortran_lines.append("contains")
+    fortran_lines.append("")
+    
+    # Simple function that returns basis type
+    fortran_lines.append("  function basis_name_to_type(basis_name) result(basis_type)")
+    fortran_lines.append("    character(len=*), intent(in) :: basis_name")
+    fortran_lines.append("    integer :: basis_type")
+    fortran_lines.append("    character(len=:), allocatable :: name_upper")
+    fortran_lines.append("")
+    fortran_lines.append("    name_upper = to_upper(trim(basis_name))")
+    fortran_lines.append("")
+    fortran_lines.append("    select case (name_upper)")
+    
+    # Generate cases for all basis sets
+    for family_name, basis_sets in basis_families.items():
+        fortran_lines.append(f"      ! {family_name.upper()} family")
+        for basis_name in basis_sets:
+            safe_name = sanitize_basis_name(basis_name)
+            const_name = safe_name.upper()
+            fortran_lines.append(f"      case ('{basis_name.upper()}')")
+            fortran_lines.append(f"        basis_type = {const_name}")
+        fortran_lines.append("")
+    
+    fortran_lines.append("      case default")
+    fortran_lines.append("        basis_type = -1  ! Invalid basis set")
+    fortran_lines.append("    end select")
+    fortran_lines.append("")
+    fortran_lines.append("  end function basis_name_to_type")
+    fortran_lines.append("")
+    
+    # More detailed function that also returns family name
+    fortran_lines.append("  subroutine get_basis_info(basis_name, family, basis_type, ierr)")
+    fortran_lines.append("    character(len=*), intent(in) :: basis_name")
+    fortran_lines.append("    character(len=*), intent(out) :: family")
+    fortran_lines.append("    integer, intent(out) :: basis_type")
+    fortran_lines.append("    integer, intent(out) :: ierr")
+    fortran_lines.append("    character(len=:), allocatable :: name_upper")
+    fortran_lines.append("")
+    fortran_lines.append("    ierr = 0")
+    fortran_lines.append("    name_upper = to_upper(trim(basis_name))")
+    fortran_lines.append("")
+    fortran_lines.append("    select case (name_upper)")
+    
+    for family_name, basis_sets in basis_families.items():
+        fortran_lines.append(f"      ! {family_name.upper()} family")
+        for basis_name in basis_sets:
+            safe_name = sanitize_basis_name(basis_name)
+            const_name = safe_name.upper()
+            fortran_lines.append(f"      case ('{basis_name.upper()}')")
+            fortran_lines.append(f"        family = '{family_name}'")
+            fortran_lines.append(f"        basis_type = {const_name}")
+        fortran_lines.append("")
+    
+    fortran_lines.append("      case default")
+    fortran_lines.append("        family = 'UNKNOWN'")
+    fortran_lines.append("        basis_type = -1")
+    fortran_lines.append("        ierr = 1")
+    fortran_lines.append("    end select")
+    fortran_lines.append("")
+    fortran_lines.append("  end subroutine get_basis_info")
+    fortran_lines.append("")
+    
+    # Helper function to convert to uppercase
+    fortran_lines.append("  function to_upper(str) result(upper_str)")
+    fortran_lines.append("    character(len=*), intent(in) :: str")
+    fortran_lines.append("    character(len=len(str)) :: upper_str")
+    fortran_lines.append("    integer :: i, ic")
+    fortran_lines.append("")
+    fortran_lines.append("    upper_str = str")
+    fortran_lines.append("    do i = 1, len(str)")
+    fortran_lines.append("      ic = ichar(str(i:i))")
+    fortran_lines.append("      if (ic >= ichar('a') .and. ic <= ichar('z')) then")
+    fortran_lines.append("        upper_str(i:i) = char(ic - 32)")
+    fortran_lines.append("      end if")
+    fortran_lines.append("    end do")
+    fortran_lines.append("")
+    fortran_lines.append("  end function to_upper")
+    fortran_lines.append("")
+    fortran_lines.append("end module basis_set_lookup")
+    
+    return '\n'.join(fortran_lines)
 
 if __name__ == "__main__":
     # Define basis set families
@@ -420,10 +511,10 @@ if __name__ == "__main__":
     print("Generated periodic_table.f90")
     
     # # Generate lookup module
-    # lookup_module = generate_basis_lookup_module(basis_families)
-    # with open('src/basis_set_lookup.f90', 'w') as f:
-    #     f.write(lookup_module)
-    # print("Generated basis_set_lookup.f90")
+    lookup_module = generate_basis_lookup_module(basis_families)
+    with open('basis_set_lookup.f90', 'w') as f:
+        f.write(lookup_module)
+    print("Generated basis_set_lookup.f90")
 
     # Generate unified driver module
     driver_module = generate_unified_driver_module(basis_families)

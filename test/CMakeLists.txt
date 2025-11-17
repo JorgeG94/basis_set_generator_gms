@@ -25,6 +25,10 @@ file(GLOB_RECURSE FORTRAN_SOURCES
 # Create static library
 add_library(basis STATIC ${FORTRAN_SOURCES})
 
+add_executable(gms_bse "${CMAKE_SOURCE_DIR}/app/main.f90")
+target_link_libraries(gms_bse PRIVATE basis)
+
+
 # Set output name to lib_basis.a
 set_target_properties(basis PROPERTIES
     OUTPUT_NAME basis
