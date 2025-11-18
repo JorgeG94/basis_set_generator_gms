@@ -1,33 +1,33 @@
 module gms_cgto
-use iso_fortran_env, only: real64
-implicit none 
-private 
+  use iso_fortran_env, only: real64
+  implicit none
+  private
 
-public :: cgto_type, atomic_basis_type, molecular_basis_type
+  public :: cgto_type, atomic_basis_type, molecular_basis_type
 
   type :: cgto_type
-      integer :: l                                    
+    integer :: l
         !! Angular momentum quantum number (0=s, 1=p, 2=d, etc.)
-      integer :: nfunc                                
+    integer :: nfunc
         !! Number of primitive Gaussians in the contraction
-      real(real64), allocatable :: exponents(:)       
+    real(real64), allocatable :: exponents(:)
         !! Exponents (alpha values)
-      real(real64), allocatable :: coefficients(:)    
+    real(real64), allocatable :: coefficients(:)
         !! Contraction coefficients
   contains
-      procedure :: allocate_arrays => cgto_allocate_arrays
-      procedure :: destroy => cgto_destroy
-      procedure :: num_basis_functions => cgto_num_basis_functions
+    procedure :: allocate_arrays => cgto_allocate_arrays
+    procedure :: destroy => cgto_destroy
+    procedure :: num_basis_functions => cgto_num_basis_functions
   end type cgto_type
 
   type :: atomic_basis_type
-    character(len=:), allocatable :: element 
+    character(len=:), allocatable :: element
       !! element symbol
-    type(cgto_type), allocatable :: shells(:) 
+    type(cgto_type), allocatable :: shells(:)
       !! array of contracted shells
-    integer :: nshells 
+    integer :: nshells
       !! number of shells in type
-  contains 
+  contains
     procedure :: allocate_shells => allocate_basis_shells
     procedure :: destroy => atomic_basis_destroy
     procedure :: num_basis_functions => atomic_basis_num_basis_functions
@@ -38,110 +38,108 @@ public :: cgto_type, atomic_basis_type, molecular_basis_type
       !! array of atomic basis types
     integer :: nelements
       !! total number of atoms/elements in a molecule
-  contains 
+  contains
     procedure :: allocate_elements => basis_set_allocate_elements
     procedure :: destroy => basis_set_destroy
     procedure :: num_basis_functions => molecular_basis_num_basis_functions
   end type molecular_basis_type
 
-contains 
+contains
 
- pure subroutine cgto_allocate_arrays(self, nfunc)
-   class(cgto_type), intent(inout) :: self 
-   integer, intent(in) :: nfunc
+  pure subroutine cgto_allocate_arrays(self, nfunc)
+    class(cgto_type), intent(inout) :: self
+    integer, intent(in) :: nfunc
 
-   self%nfunc = nfunc 
-   allocate(self%exponents(nfunc))
-   allocate(self%coefficients(nfunc))
- end subroutine cgto_allocate_arrays
+    self%nfunc = nfunc
+    allocate (self%exponents(nfunc))
+    allocate (self%coefficients(nfunc))
+  end subroutine cgto_allocate_arrays
 
- pure subroutine cgto_destroy(self)
-  class(cgto_type), intent(inout) :: self 
+  pure subroutine cgto_destroy(self)
+    class(cgto_type), intent(inout) :: self
 
-  if(allocated(self%exponents)) deallocate(self%exponents)
-  if(allocated(self%coefficients)) deallocate(self%coefficients)
-  self%nfunc = 0
-  self%l = 0 
- end subroutine cgto_destroy
+    if (allocated(self%exponents)) deallocate (self%exponents)
+    if (allocated(self%coefficients)) deallocate (self%coefficients)
+    self%nfunc = 0
+    self%l = 0
+  end subroutine cgto_destroy
 
-
- pure subroutine allocate_basis_shells(self, nshells)
+  pure subroutine allocate_basis_shells(self, nshells)
     class(atomic_basis_type), intent(inout) :: self
-    integer, intent(in) :: nshells 
+    integer, intent(in) :: nshells
 
-    self%nshells = nshells 
-    allocate(self%shells(nshells))
- end subroutine allocate_basis_shells
+    self%nshells = nshells
+    allocate (self%shells(nshells))
+  end subroutine allocate_basis_shells
 
- pure subroutine atomic_basis_destroy(self)
-   class(atomic_basis_type), intent(inout) :: self 
-   integer :: i 
+  pure subroutine atomic_basis_destroy(self)
+    class(atomic_basis_type), intent(inout) :: self
+    integer :: i
 
-   if (allocated(self%shells)) then 
-    do i = 1, self%nshells 
-      call self%shells(i)%destroy()
-    end do
-    deallocate(self%shells)
-  end if
-  if (allocated(self%element)) deallocate(self%element)
-  self%nshells = 0
-end subroutine atomic_basis_destroy
+    if (allocated(self%shells)) then
+      do i = 1, self%nshells
+        call self%shells(i)%destroy()
+      end do
+      deallocate (self%shells)
+    end if
+    if (allocated(self%element)) deallocate (self%element)
+    self%nshells = 0
+  end subroutine atomic_basis_destroy
 
+  pure subroutine basis_set_allocate_elements(self, nelements)
+    class(molecular_basis_type), intent(inout) :: self
+    integer, intent(in) :: nelements
 
-pure subroutine basis_set_allocate_elements(self, nelements)
-  class(molecular_basis_type), intent(inout) :: self
-  integer, intent(in) :: nelements
+    self%nelements = nelements
+    allocate (self%elements(nelements))
 
-  self%nelements = nelements 
-  allocate(self%elements(nelements))
+  end subroutine basis_set_allocate_elements
 
-end subroutine basis_set_allocate_elements 
+  pure subroutine basis_set_destroy(self)
+    class(molecular_basis_type), intent(inout) :: self
+    integer :: i
 
-pure subroutine basis_set_destroy(self)
-  class(molecular_basis_type), intent(inout) :: self 
-  integer :: i 
+    if (allocated(self%elements)) then
+      do i = 1, self%nelements
+        call self%elements(i)%destroy()
+      end do
+      deallocate (self%elements)
+    end if
 
-  if(allocated(self%elements)) then 
-    do i = 1, self%nelements 
-      call self%elements(i)%destroy()
-    end do 
-    deallocate(self%elements)
-  end if
-
-  self%nelements = 0 
-end subroutine basis_set_destroy
+    self%nelements = 0
+  end subroutine basis_set_destroy
 
 !> Get number of basis functions in a shell (Cartesian)
-pure function cgto_num_basis_functions(self) result(nbf)
+  pure function cgto_num_basis_functions(self) result(nbf)
     class(cgto_type), intent(in) :: self
     integer :: nbf
 
     ! Cartesian: (l+1)*(l+2)/2
-    nbf = (self%l + 1) * (self%l + 2) / 2
-end function cgto_num_basis_functions
+    nbf = (self%l + 1)*(self%l + 2)/2
+  end function cgto_num_basis_functions
 
 !> Get total number of basis functions for an atom
-pure function atomic_basis_num_basis_functions(self) result(nbf)
+  pure function atomic_basis_num_basis_functions(self) result(nbf)
     class(atomic_basis_type), intent(in) :: self
     integer :: nbf
     integer :: ishell
 
     nbf = 0
     do ishell = 1, self%nshells
-        nbf = nbf + self%shells(ishell)%num_basis_functions()
+      nbf = nbf + self%shells(ishell)%num_basis_functions()
     end do
-end function atomic_basis_num_basis_functions
+  end function atomic_basis_num_basis_functions
 
 !> Get total number of basis functions for the molecule
-pure function molecular_basis_num_basis_functions(self) result(nbf)
+  pure function molecular_basis_num_basis_functions(self) result(nbf)
     class(molecular_basis_type), intent(in) :: self
     integer :: nbf
     integer :: iatom
 
     nbf = 0
     do iatom = 1, self%nelements
-        nbf = nbf + self%elements(iatom)%num_basis_functions()
+      nbf = nbf + self%elements(iatom)%num_basis_functions()
     end do
-end function molecular_basis_num_basis_functions
+  end function molecular_basis_num_basis_functions
 
 end module gms_cgto
