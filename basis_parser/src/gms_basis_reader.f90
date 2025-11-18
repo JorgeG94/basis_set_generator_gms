@@ -109,72 +109,73 @@ contains
 
   end subroutine parse_element_basis
 
-!> First pass: count shells for a specific element (accounting for L-shell splitting)
-  subroutine count_shells_for_element(basis_string, element_name, nshells, stat, errmsg)
-    character(len=*), intent(in) :: basis_string
-    character(len=*), intent(in) :: element_name
-    integer, intent(out) :: nshells
-    integer, intent(out) :: stat
-    character(len=:), allocatable, intent(out) :: errmsg
-
-    integer :: line_start, line_end, line_type
-    character(len=256) :: line
-    logical :: in_data_block, in_target_element
-    character(len=1) :: ang_mom
-
-    stat = 0
-    nshells = 0
-    in_data_block = .false.
-    in_target_element = .false.
-
-    line_start = 1
-    do while (line_start <= len(basis_string))
-      call get_next_line(basis_string, line_start, line, line_end)
-      if (line_end == 0) exit
-
-      line = adjustl(line)
-      line_type = classify_line(line)
-
-      select case (line_type)
-      case (LINE_UNKNOWN)
-        if (index(line, '$DATA') > 0) then
-          in_data_block = .true.
-        else if (index(line, '$END') > 0) then
-          exit  ! Done
+  !> First pass: count shells for a specific element (accounting for L-shell splitting)
+subroutine count_shells_for_element(basis_string, element_name, nshells, stat, errmsg)
+  character(len=*), intent(in) :: basis_string
+  character(len=*), intent(in) :: element_name
+  integer, intent(out) :: nshells
+  integer, intent(out) :: stat
+  character(len=:), allocatable, intent(out) :: errmsg
+  
+  integer :: line_start, line_end, line_type
+  character(len=256) :: line
+  logical :: in_target_element, found_element
+  character(len=1) :: ang_mom
+  
+  stat = 0
+  nshells = 0
+  in_target_element = .false.
+  found_element = .false.
+  line_start = 1
+  
+  do while (line_start <= len(basis_string))
+    call get_next_line(basis_string, line_start, line, line_end)
+    if (line_end == 0) exit
+    
+    line = adjustl(line)
+    line_type = classify_line(line)
+    
+    select case (line_type)
+    case (LINE_ATOM)
+      ! Check if this is our target element
+      if (trim(adjustl(line)) == trim(adjustl(element_name))) then
+        in_target_element = .true.
+        found_element = .true.
+      else
+        ! Different element - stop counting if we were in target
+        if (in_target_element) exit
+        in_target_element = .false.
+      end if
+      
+    case (LINE_SHELL)
+      if (in_target_element) then
+        ! Extract angular momentum
+        line = adjustl(line)
+        ang_mom = line(1:1)
+        
+        ! L shells become 2 shells (S + P)
+        if (ang_mom == 'L') then
+          nshells = nshells + 2
+        else
+          nshells = nshells + 1
         end if
-
-      case (LINE_ATOM)
-        if (in_data_block) then
-          ! Check if this is our target element
-          if (trim(adjustl(line)) == trim(adjustl(element_name))) then
-            in_target_element = .true.
-          else
-            ! Different element - stop counting if we were in target
-            if (in_target_element) exit
-            in_target_element = .false.
-          end if
-        end if
-
-      case (LINE_SHELL)
-        if (in_target_element) then
-          ! Extract angular momentum
-          line = adjustl(line)
-          ang_mom = line(1:1)
-
-          ! L shells become 2 shells (S + P)
-          if (ang_mom == 'L') then
-            nshells = nshells + 2
-          else
-            nshells = nshells + 1
-          end if
-        end if
-
-      end select
-
-      line_start = line_end
-    end do
-
-  end subroutine count_shells_for_element
+      end if
+      
+    case (LINE_UNKNOWN)
+      ! Skip blank lines and comments
+      continue
+    end select
+    
+    line_start = line_end
+  end do
+  
+  ! Check if we found the element at all
+  if (.not. found_element) then
+    stat = 1
+    errmsg = "Element not found in basis string: " // trim(element_name)
+  end if
+  
+end subroutine count_shells_for_element
 
 !> Helper: get next line from string
   subroutine get_next_line(string, line_start, line, line_end)
@@ -285,7 +286,7 @@ contains
 
     stat = 0
     in_data_block = .false.
-    in_target_element = .false.
+    in_target_element = .true.
     ishell = 0
     reading_l_shell = .false.
 
@@ -298,12 +299,12 @@ contains
       line_type = classify_line(line)
 
       select case (line_type)
-      case (LINE_UNKNOWN)
-        if (index(line, '$DATA') > 0) then
-          in_data_block = .true.
-        else if (index(line, '$END') > 0) then
-          exit
-        end if
+      ! case (LINE_UNKNOWN)
+      !   if (index(line, '$DATA') > 0) then
+      !     in_data_block = .true.
+      !   else if (index(line, '$END') > 0) then
+      !     exit
+      !   end if
 
       case (LINE_ATOM)
         if (in_data_block) then

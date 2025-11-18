@@ -2,6 +2,7 @@ program main
   use gms_basis_reader, only: say_hello, classify_line, parse_element_basis, &
                               build_molecular_basis
   use gms_cgto
+  use basis_file_reader
   use iso_fortran_env, only: real64
   implicit none
   character(len=*), parameter :: test_basis = &
@@ -25,6 +26,8 @@ program main
   call test_parse_element()
 
   call test_h2_molecule()
+
+  call test_basis_file_reader()
 
 contains
 
@@ -143,5 +146,87 @@ contains
     call h2_basis%destroy()
 
   end subroutine test_h2_molecule
+
+  subroutine test_basis_file_reader()
+  type(basis_file_t) :: basis_file
+  type(atomic_basis_type) :: h_basis, c_basis
+  character(len=:), allocatable :: h_content, c_content, errmsg
+  character(len=*), parameter :: path_to_basis = "6-31G.txt"
+  integer :: stat, i, j
+  character(len=1), dimension(0:6) :: ang_mom_names = ['S', 'P', 'D', 'F', 'G', 'H', 'I']
+  
+  print *, "Testing basis_file_reader:"
+  print *, "=========================="
+  print *
+  
+  ! Open the basis set file once
+  print *, "Opening basis set file: ", path_to_basis
+  call open_basis_file(basis_file, path_to_basis)
+  print *, "File opened successfully"
+  print *
+  
+  ! Test 1: Extract and parse Hydrogen
+  print *, "--- Extracting Hydrogen ---"
+  h_content = extract_element(basis_file, "HYDROGEN")
+  print *, "Extracted content:"
+  print *, h_content
+  print *
+  
+  call parse_element_basis(h_content, "HYDROGEN", h_basis, stat, errmsg)
+  if (stat /= 0) then
+    print *, "ERROR parsing Hydrogen: ", errmsg
+    return
+  end if
+  
+  print *, "Successfully parsed basis for: ", h_basis%element
+  print *, "Number of shells: ", h_basis%nshells
+  print *
+  
+  print *, h_basis%shells(1)%l 
+  do i = 1, h_basis%nshells
+    print '(a,i0,a,a,a,i0,a)', "Shell ", i, " (", ang_mom_names(h_basis%shells(i)%l), &
+      "): ", h_basis%shells(i)%nfunc, " primitives"
+    do j = 1, h_basis%shells(i)%nfunc
+      print '(2x,i2,2x,f12.6,2x,f12.6)', j, h_basis%shells(i)%exponents(j), &
+        h_basis%shells(i)%coefficients(j)
+    end do
+    print *
+  end do
+  
+  ! Test 2: Extract and parse Carbon
+  print *, "--- Extracting Carbon ---"
+  c_content = extract_element(basis_file, "CARBON")
+  print *, "Extracted content:"
+  print *, c_content
+  print *
+  
+  call parse_element_basis(c_content, "CARBON", c_basis, stat, errmsg)
+  if (stat /= 0) then
+    print *, "ERROR parsing Carbon: ", errmsg
+    call h_basis%destroy()
+    return
+  end if
+  
+  print *, "Successfully parsed basis for: ", c_basis%element
+  print *, "Number of shells: ", c_basis%nshells
+  print *
+  
+  do i = 1, c_basis%nshells
+    print '(a,i0,a,a,a,i0,a)', "Shell ", i, " (", ang_mom_names(c_basis%shells(i)%l), &
+      "): ", c_basis%shells(i)%nfunc, " primitives"
+    do j = 1, c_basis%shells(i)%nfunc
+      print '(2x,i2,2x,f12.6,2x,f12.6)', j, c_basis%shells(i)%exponents(j), &
+        c_basis%shells(i)%coefficients(j)
+    end do
+    print *
+  end do
+  
+  ! Cleanup
+  call h_basis%destroy()
+  call c_basis%destroy()
+  
+  print *, "All tests passed!"
+  
+end subroutine test_basis_file_reader
 
 end program main
