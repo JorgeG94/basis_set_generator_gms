@@ -57,7 +57,7 @@ contains
     end select
   end function ang_mom_int_to_char
 
-  function classify_line(line) result(line_type)
+  pure function classify_line(line) result(line_type)
     character(len=*), intent(in) :: line
     integer :: line_type
 
@@ -77,14 +77,14 @@ contains
 
   end function classify_line
 
-  function is_blank_or_control(line) result(res)
+  pure function is_blank_or_control(line) result(res)
     character(len=*), intent(in) :: line
     logical :: res
 
     res = (len_trim(line) == 0) .or. (line(1:1) == '$')
   end function is_blank_or_control
 
-  function is_function_line(line) result(res)
+  pure function is_function_line(line) result(res)
     character(len=*), intent(in) :: line
     logical :: res
     character(len=1) :: first_char
@@ -98,7 +98,7 @@ contains
     res = (first_char >= '0' .and. first_char <= '9')
   end function is_function_line
 
-  function is_shell_header(line) result(res)
+  pure function is_shell_header(line) result(res)
     character(len=*), intent(in) :: line
     logical :: res
     character(len=1) :: first_char
@@ -117,7 +117,7 @@ contains
   end function is_shell_header
 
 !> Parse basis set for a specific element from a basis string
-  subroutine parse_element_basis(basis_string, element_name, atom_basis, stat, errmsg)
+  pure subroutine parse_element_basis(basis_string, element_name, atom_basis, stat, errmsg)
     character(len=*), intent(in) :: basis_string
     character(len=*), intent(in) :: element_name
     type(atomic_basis_type), intent(out) :: atom_basis
@@ -148,7 +148,7 @@ contains
   end subroutine parse_element_basis
 
   !> First pass: count shells for a specific element (accounting for L-shell splitting)
-subroutine count_shells_for_element(basis_string, element_name, nshells, stat, errmsg)
+pure subroutine count_shells_for_element(basis_string, element_name, nshells, stat, errmsg)
   character(len=*), intent(in) :: basis_string
   character(len=*), intent(in) :: element_name
   integer, intent(out) :: nshells
@@ -216,7 +216,7 @@ subroutine count_shells_for_element(basis_string, element_name, nshells, stat, e
 end subroutine count_shells_for_element
 
 !> Helper: get next line from string
-  subroutine get_next_line(string, line_start, line, line_end)
+  pure subroutine get_next_line(string, line_start, line, line_end)
     character(len=*), intent(in) :: string
     integer, intent(in) :: line_start
     character(len=*), intent(out) :: line
@@ -258,7 +258,7 @@ end subroutine count_shells_for_element
   end subroutine resize_integer_array
 
 !> Parse shell header line (e.g., "S 2" or "L 3")
-  subroutine parse_shell_header(line, ang_mom, nfunc, stat)
+  pure subroutine parse_shell_header(line, ang_mom, nfunc, stat)
     character(len=*), intent(in) :: line
     character(len=1), intent(out) :: ang_mom
     integer, intent(out) :: nfunc
@@ -275,7 +275,7 @@ end subroutine count_shells_for_element
   end subroutine parse_shell_header
 
 !> Parse function line (e.g., "1 1.0 2.0" or "1 1.0 2.0 3.0" for L shells)
-  subroutine parse_function_line(line, func_num, exponent, coeff_s, coeff_p, has_p, stat)
+  pure subroutine parse_function_line(line, func_num, exponent, coeff_s, coeff_p, has_p, stat)
     character(len=*), intent(in) :: line
     integer, intent(out) :: func_num
     real(real64), intent(out) :: exponent
@@ -303,7 +303,7 @@ end subroutine count_shells_for_element
   end subroutine parse_function_line
 
 !> Second pass: fill in the shell data for a specific element
-  subroutine fill_element_basis(basis_string, element_name, atom_basis, stat, errmsg)
+  pure subroutine fill_element_basis(basis_string, element_name, atom_basis, stat, errmsg)
     character(len=*), intent(in) :: basis_string
     character(len=*), intent(in) :: element_name
     type(atomic_basis_type), intent(inout) :: atom_basis
