@@ -6,7 +6,7 @@ module gms_cgto
   public :: cgto_type, atomic_basis_type, molecular_basis_type
 
   type :: cgto_type
-    integer :: l
+    integer :: ang_mom
         !! Angular momentum quantum number (0=s, 1=p, 2=d, etc.)
     integer :: nfunc
         !! Number of primitive Gaussians in the contraction
@@ -61,7 +61,7 @@ contains
     if (allocated(self%exponents)) deallocate (self%exponents)
     if (allocated(self%coefficients)) deallocate (self%coefficients)
     self%nfunc = 0
-    self%l = 0
+    self%ang_mom = 0
   end subroutine cgto_destroy
 
   pure subroutine allocate_basis_shells(self, nshells)
@@ -114,8 +114,8 @@ contains
     class(cgto_type), intent(in) :: self
     integer :: nbf
 
-    ! Cartesian: (l+1)*(l+2)/2
-    nbf = (self%l + 1)*(self%l + 2)/2
+    ! Cartesian: (ang_mom+1)*(ang_mom+2)/2
+    nbf = (self%ang_mom + 1)*(self%ang_mom + 2)/2
   end function cgto_num_basis_functions
 
 !> Get total number of basis functions for an atom

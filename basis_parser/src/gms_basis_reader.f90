@@ -1,5 +1,6 @@
 module gms_basis_reader
   use gms_cgto
+  use basis_file_reader, only: strings_equal
   use iso_fortran_env, only: real64
   implicit none
   private
@@ -8,6 +9,8 @@ module gms_basis_reader
   public :: classify_line
   public :: parse_element_basis
   public :: build_molecular_basis
+  public :: ang_mom_char_to_int
+  public :: ang_mom_int_to_char
 
   integer, parameter, public :: LINE_UNKNOWN = 0
   integer, parameter, public :: LINE_ATOM = 1
@@ -18,6 +21,41 @@ contains
   subroutine say_hello
     print *, "Hello, gms_basis_reader!"
   end subroutine say_hello
+
+  !> Convert angular momentum character to integer (S=0, P=1, D=2, etc.)
+  pure function ang_mom_char_to_int(ang_mom_char) result(ang_mom)
+    character(len=1), intent(in) :: ang_mom_char
+    integer :: ang_mom
+
+    select case (ang_mom_char)
+    case ('S'); ang_mom = 0
+    case ('P'); ang_mom = 1
+    case ('D'); ang_mom = 2
+    case ('F'); ang_mom = 3
+    case ('G'); ang_mom = 4
+    case ('H'); ang_mom = 5
+    case ('I'); ang_mom = 6
+    case ('L'); ang_mom = -1  ! Special case: L shells are split into S+P
+    case default; ang_mom = -1
+    end select
+  end function ang_mom_char_to_int
+
+  !> Convert angular momentum integer to character (0=S, 1=P, 2=D, etc.)
+  pure function ang_mom_int_to_char(ang_mom) result(ang_mom_char)
+    integer, intent(in) :: ang_mom
+    character(len=1) :: ang_mom_char
+
+    select case (ang_mom)
+    case (0); ang_mom_char = 'S'
+    case (1); ang_mom_char = 'P'
+    case (2); ang_mom_char = 'D'
+    case (3); ang_mom_char = 'F'
+    case (4); ang_mom_char = 'G'
+    case (5); ang_mom_char = 'H'
+    case (6); ang_mom_char = 'I'
+    case default; ang_mom_char = '?'
+    end select
+  end function ang_mom_int_to_char
 
   function classify_line(line) result(line_type)
     character(len=*), intent(in) :: line
@@ -138,7 +176,7 @@ subroutine count_shells_for_element(basis_string, element_name, nshells, stat, e
     select case (line_type)
     case (LINE_ATOM)
       ! Check if this is our target element
-      if (trim(adjustl(line)) == trim(adjustl(element_name))) then
+      if (strings_equal(line, element_name)) then
         in_target_element = .true.
         found_element = .true.
       else
@@ -308,7 +346,7 @@ end subroutine count_shells_for_element
 
       case (LINE_ATOM)
         if (in_data_block) then
-          if (trim(adjustl(line)) == trim(adjustl(element_name))) then
+          if (strings_equal(line, element_name)) then
             in_target_element = .true.
           else
             if (in_target_element) exit
@@ -331,12 +369,12 @@ end subroutine count_shells_for_element
 
             ishell = ishell + 1
             l_shell_s_idx = ishell
-            atom_basis%shells(ishell)%l = 0  ! S
+            atom_basis%shells(ishell)%ang_mom = 0  ! S
             call atom_basis%shells(ishell)%allocate_arrays(nfunc)
 
             ishell = ishell + 1
             l_shell_p_idx = ishell
-            atom_basis%shells(ishell)%l = 1  ! P
+            atom_basis%shells(ishell)%ang_mom = 1  ! P
             call atom_basis%shells(ishell)%allocate_arrays(nfunc)
 
             ifunc = 0  ! Reset function counter
@@ -346,15 +384,7 @@ end subroutine count_shells_for_element
             ishell = ishell + 1
 
             ! Set angular momentum (S=0, P=1, D=2, F=3, G=4, H=5, I=6)
-            select case (ang_mom)
-            case ('S'); atom_basis%shells(ishell)%l = 0
-            case ('P'); atom_basis%shells(ishell)%l = 1
-            case ('D'); atom_basis%shells(ishell)%l = 2
-            case ('F'); atom_basis%shells(ishell)%l = 3
-            case ('G'); atom_basis%shells(ishell)%l = 4
-            case ('H'); atom_basis%shells(ishell)%l = 5
-            case ('I'); atom_basis%shells(ishell)%l = 6
-            end select
+            atom_basis%shells(ishell)%ang_mom = ang_mom_char_to_int(ang_mom)
 
             call atom_basis%shells(ishell)%allocate_arrays(nfunc)
             ifunc = 0
@@ -412,7 +442,7 @@ end subroutine count_shells_for_element
 
       ! Check if we've already seen this string
       do j = 1, nunique
-        if (trim(adjustl(input_array(i))) == trim(adjustl(temp_unique(j)))) then
+        if (strings_equal(input_array(i), temp_unique(j))) then
           is_unique = .false.
           exit
         end if
@@ -439,7 +469,7 @@ end subroutine count_shells_for_element
     call dest%allocate_shells(source%nshells)
 
     do ishell = 1, source%nshells
-      dest%shells(ishell)%l = source%shells(ishell)%l
+      dest%shells(ishell)%ang_mom = source%shells(ishell)%ang_mom
       call dest%shells(ishell)%allocate_arrays(source%shells(ishell)%nfunc)
       dest%shells(ishell)%exponents = source%shells(ishell)%exponents
       dest%shells(ishell)%coefficients = source%shells(ishell)%coefficients
@@ -490,7 +520,7 @@ end subroutine count_shells_for_element
     do iatom = 1, natoms
       ! Find which unique element this atom corresponds to
       do iunique = 1, nunique
-        if (trim(adjustl(element_names(iatom))) == trim(adjustl(unique_elements(iunique)))) then
+        if (strings_equal(element_names(iatom), unique_elements(iunique))) then
           match_idx = iunique
           exit
         end if

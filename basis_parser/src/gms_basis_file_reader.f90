@@ -3,7 +3,7 @@ module basis_file_reader
   implicit none
   
   private
-  public :: basis_file_t, open_basis_file, extract_element
+  public :: basis_file_t, open_basis_file, extract_element, strings_equal
   
   type :: basis_file_t
     character(len=:), allocatable :: full_content
@@ -149,9 +149,16 @@ end function is_letter
     character(len=1), intent(in) :: c
     logical :: is_upper
     integer :: ic
-    
+
     ic = iachar(c)
     is_upper = (ic >= iachar('A') .and. ic <= iachar('Z'))
   end function is_uppercase_letter
+
+  !> Compare two strings after trimming and adjusting (removing leading/trailing whitespace)
+  pure function strings_equal(str1, str2) result(equal)
+    character(len=*), intent(in) :: str1, str2
+    logical :: equal
+    equal = trim(adjustl(str1)) == trim(adjustl(str2))
+  end function strings_equal
 
 end module basis_file_reader

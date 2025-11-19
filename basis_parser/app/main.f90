@@ -1,6 +1,6 @@
 program main
   use gms_basis_reader, only: say_hello, classify_line, parse_element_basis, &
-                              build_molecular_basis
+                              build_molecular_basis, ang_mom_int_to_char
   use gms_cgto
   use basis_file_reader
   use iso_fortran_env, only: real64
@@ -69,7 +69,6 @@ contains
     type(atomic_basis_type) :: h_basis
     integer :: stat, i, j
     character(len=:), allocatable :: errmsg
-    character(len=1), dimension(0:6) :: ang_mom_names = ['S', 'P', 'D', 'F', 'G', 'H', 'I']
 
     print *, "Testing parse_element_basis:"
     print *, "============================"
@@ -88,7 +87,7 @@ contains
 
     ! Print each shell
     do i = 1, h_basis%nshells
-      print '(a,i0,a,a,a,i0,a)', "Shell ", i, " (", ang_mom_names(h_basis%shells(i)%l), &
+      print '(a,i0,a,a,a,i0,a)', "Shell ", i, " (", ang_mom_int_to_char(h_basis%shells(i)%ang_mom), &
         "): ", h_basis%shells(i)%nfunc, " primitives"
       do j = 1, h_basis%shells(i)%nfunc
         print '(2x,i2,2x,f12.6,2x,f12.6)', j, h_basis%shells(i)%exponents(j), &
@@ -106,7 +105,6 @@ contains
     integer :: stat, iatom, ishell, ifunc
     character(len=:), allocatable :: errmsg
     character(len=*), dimension(2), parameter :: h2_atoms = ["HYDROGEN", "HYDROGEN"]
-    character(len=1), dimension(0:6) :: ang_mom_names = ['S', 'P', 'D', 'F', 'G', 'H', 'I']
 
     print *, "Testing H2 molecular basis:"
     print *, "============================"
@@ -131,7 +129,7 @@ contains
 
       do ishell = 1, h2_basis%elements(iatom)%nshells
         print '(a,i0,a,a,a,i0,a)', "  Shell ", ishell, " (", &
-          ang_mom_names(h2_basis%elements(iatom)%shells(ishell)%l), &
+          ang_mom_int_to_char(h2_basis%elements(iatom)%shells(ishell)%ang_mom), &
           "): ", h2_basis%elements(iatom)%shells(ishell)%nfunc, " primitives"
 
         do ifunc = 1, h2_basis%elements(iatom)%shells(ishell)%nfunc
@@ -153,7 +151,6 @@ contains
   character(len=:), allocatable :: h_content, c_content, errmsg
   character(len=*), parameter :: path_to_basis = "6-31G.txt"
   integer :: stat, i, j
-  character(len=1), dimension(0:6) :: ang_mom_names = ['S', 'P', 'D', 'F', 'G', 'H', 'I']
   
   print *, "Testing basis_file_reader:"
   print *, "=========================="
@@ -182,9 +179,9 @@ contains
   print *, "Number of shells: ", h_basis%nshells
   print *
   
-  print *, h_basis%shells(1)%l 
+  print *, h_basis%shells(1)%ang_mom
   do i = 1, h_basis%nshells
-    print '(a,i0,a,a,a,i0,a)', "Shell ", i, " (", ang_mom_names(h_basis%shells(i)%l), &
+    print '(a,i0,a,a,a,i0,a)', "Shell ", i, " (", ang_mom_int_to_char(h_basis%shells(i)%ang_mom), &
       "): ", h_basis%shells(i)%nfunc, " primitives"
     do j = 1, h_basis%shells(i)%nfunc
       print '(2x,i2,2x,f12.6,2x,f12.6)', j, h_basis%shells(i)%exponents(j), &
@@ -210,9 +207,9 @@ contains
   print *, "Successfully parsed basis for: ", c_basis%element
   print *, "Number of shells: ", c_basis%nshells
   print *
-  
+
   do i = 1, c_basis%nshells
-    print '(a,i0,a,a,a,i0,a)', "Shell ", i, " (", ang_mom_names(c_basis%shells(i)%l), &
+    print '(a,i0,a,a,a,i0,a)', "Shell ", i, " (", ang_mom_int_to_char(c_basis%shells(i)%ang_mom), &
       "): ", c_basis%shells(i)%nfunc, " primitives"
     do j = 1, c_basis%shells(i)%nfunc
       print '(2x,i2,2x,f12.6,2x,f12.6)', j, c_basis%shells(i)%exponents(j), &
