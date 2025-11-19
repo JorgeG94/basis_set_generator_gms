@@ -119,7 +119,7 @@ contains
   
 end function extract_element
 
-function is_letter(c) result(is_alpha)
+pure function is_letter(c) result(is_alpha)
   character(len=1), intent(in) :: c
   logical :: is_alpha
   integer :: ic
@@ -129,7 +129,7 @@ function is_letter(c) result(is_alpha)
              (ic >= iachar('a') .and. ic <= iachar('z'))
 end function is_letter
 
-  function uppercase(str) result(upper)
+  pure function uppercase(str) result(upper)
     character(len=*), intent(in) :: str
     character(len=:), allocatable :: upper
     integer :: i, ic
@@ -145,7 +145,7 @@ end function is_letter
     end do
   end function uppercase
   
-  function is_uppercase_letter(c) result(is_upper)
+  pure function is_uppercase_letter(c) result(is_upper)
     character(len=1), intent(in) :: c
     logical :: is_upper
     integer :: ic

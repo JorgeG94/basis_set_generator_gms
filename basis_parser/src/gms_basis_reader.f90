@@ -5,7 +5,6 @@ module gms_basis_reader
   implicit none
   private
 
-  public :: say_hello
   public :: classify_line
   public :: parse_element_basis
   public :: build_molecular_basis
@@ -18,9 +17,7 @@ module gms_basis_reader
   integer, parameter, public :: LINE_FUNCTION = 3
 
 contains
-  subroutine say_hello
-    print *, "Hello, gms_basis_reader!"
-  end subroutine say_hello
+
 
   !> Convert angular momentum character to integer (S=0, P=1, D=2, etc.)
   pure function ang_mom_char_to_int(ang_mom_char) result(ang_mom)
@@ -243,19 +240,6 @@ end subroutine count_shells_for_element
 
   end subroutine get_next_line
 
-!> Helper: resize integer array
-  subroutine resize_integer_array(array, new_size)
-    integer, allocatable, intent(inout) :: array(:)
-    integer, intent(in) :: new_size
-    integer, allocatable :: temp(:)
-    integer :: old_size
-
-    old_size = size(array)
-    allocate (temp(new_size))
-    temp(1:old_size) = array
-    call move_alloc(temp, array)
-
-  end subroutine resize_integer_array
 
 !> Parse shell header line (e.g., "S 2" or "L 3")
   pure subroutine parse_shell_header(line, ang_mom, nfunc, stat)

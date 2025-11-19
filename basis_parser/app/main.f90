@@ -1,5 +1,5 @@
 program main
-  use gms_basis_reader, only: say_hello, classify_line, parse_element_basis, &
+  use gms_basis_reader, only: classify_line, parse_element_basis, &
                               build_molecular_basis, ang_mom_int_to_char
   use gms_cgto
   use basis_file_reader
