@@ -154,7 +154,7 @@ contains
   type(basis_file_t) :: basis_file
   type(atomic_basis_type) :: h_basis, c_basis
   character(len=:), allocatable :: h_content, c_content, errmsg
-  character(len=*), parameter :: path_to_basis = "6-31G.txt"
+  character(len=*), parameter :: path_to_basis = "basis_sets/6-31G.txt"
   integer :: stat, i, j
   
   print *, "Testing basis_file_reader:"
@@ -419,7 +419,7 @@ subroutine test_prism_with_basis()
   integer :: stat, iatom, ishell
   character(len=:), allocatable :: errmsg, element_content
   character(len=*), parameter :: xyz_file = "prism.xyz"
-  character(len=*), parameter :: basis_file_name = "6-31G.txt"
+  character(len=*), parameter :: basis_file_name = "basis_sets/6-31G.txt"
   character(len=10), allocatable :: element_names(:)
 
   print *
