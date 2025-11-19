@@ -1,4 +1,5 @@
 program main
+  use gms_xyz_reader
   use gms_basis_reader, only: classify_line, parse_element_basis, &
                               build_molecular_basis, ang_mom_int_to_char
   use gms_cgto
@@ -28,6 +29,8 @@ program main
   call test_h2_molecule()
 
   call test_basis_file_reader()
+
+  call test_xyz_reader()
 
 contains
 
@@ -225,5 +228,186 @@ contains
   print *, "All tests passed!"
   
 end subroutine test_basis_file_reader
+
+subroutine test_xyz_reader()
+  
+  type(geometry_type) :: geom
+  integer :: stat, i
+  character(len=:), allocatable :: errmsg
+  character(len=*), parameter :: test_xyz = &
+    "3" // new_line('a') // &
+    "Water molecule" // new_line('a') // &
+    "O    0.000000    0.000000    0.119262" // new_line('a') // &
+    "H    0.000000    0.763239   -0.477047" // new_line('a') // &
+    "H    0.000000   -0.763239   -0.477047"
+  
+  print *, "=========================================="
+  print *, "Testing XYZ Reader"
+  print *, "=========================================="
+  print *
+  
+  ! Test 1: Read water molecule
+  print *, "Test 1: Reading water molecule"
+  print *, "------------------------------------------"
+  call read_xyz_string(test_xyz, geom, stat, errmsg)
+  
+  if (stat /= 0) then
+    print *, "FAILED: ", errmsg
+    return
+  end if
+  
+  print *, "Number of atoms:", geom%natoms
+  print *, "Comment:", trim(geom%comment)
+  print *
+  print *, "Geometry:"
+  do i = 1, geom%natoms
+    print '(2X, A4, 3F12.6)', geom%elements(i), geom%coords(:, i)
+  end do
+  print *
+  
+  ! Verify results
+  if (geom%natoms /= 3) then
+    print *, "FAILED: Expected 3 atoms, got", geom%natoms
+    return
+  end if
+  
+  if (geom%elements(1) /= "O") then
+    print *, "FAILED: Expected O, got", geom%elements(1)
+    return
+  end if
+  
+  if (abs(geom%coords(3, 1) - 0.119262_real64) > 1.0e-6_real64) then
+    print *, "FAILED: Coordinate mismatch"
+    return
+  end if
+  
+  print *, "PASSED"
+  print *
+  call geom%destroy()
+  
+  ! Test 2: Single atom
+  print *, "Test 2: Single atom (carbon)"
+  print *, "------------------------------------------"
+  call read_xyz_string("1" // new_line('a') // &
+                       "Single carbon atom" // new_line('a') // &
+                       "C  1.0  2.0  3.0", geom, stat, errmsg)
+  
+  if (stat /= 0) then
+    print *, "FAILED: ", errmsg
+    return
+  end if
+  
+  if (geom%natoms /= 1 .or. geom%elements(1) /= "C") then
+    print *, "FAILED: Single atom test"
+    return
+  end if
+  
+  print *, "Element:", trim(geom%elements(1))
+  print '(2X, A, 3F12.6)', "Coords:", geom%coords(:, 1)
+  print *, "PASSED"
+  print *
+  call geom%destroy()
+  
+  ! Test 3: Empty comment line
+  print *, "Test 3: Empty comment line"
+  print *, "------------------------------------------"
+  call read_xyz_string("2" // new_line('a') // &
+                       new_line('a') // &
+                       "He  0.0  0.0  0.0" // new_line('a') // &
+                       "Ne  5.0  0.0  0.0", geom, stat, errmsg)
+  
+  if (stat /= 0) then
+    print *, "FAILED: ", errmsg
+    return
+  end if
+  
+  print *, "Comment: '", trim(geom%comment), "'"
+  print *, "Atoms:", geom%natoms
+  print *, "PASSED"
+  print *
+  call geom%destroy()
+  
+  ! Test 4: Error handling - insufficient lines
+  print *, "Test 4: Error handling (insufficient lines)"
+  print *, "------------------------------------------"
+  call read_xyz_string("3" // new_line('a') // &
+                       "Should fail" // new_line('a') // &
+                       "H  0.0  0.0  0.0", geom, stat, errmsg)
+  
+  if (stat == 0) then
+    print *, "FAILED: Should have detected insufficient lines"
+    call geom%destroy()
+    return
+  end if
+  
+  print *, "Correctly caught error:", trim(errmsg)
+  print *, "PASSED"
+  print *
+  
+  ! Test 5: Error handling - invalid atom count
+  print *, "Test 5: Error handling (invalid atom count)"
+  print *, "------------------------------------------"
+  call read_xyz_string("not_a_number" // new_line('a') // &
+                       "Comment", geom, stat, errmsg)
+  
+  if (stat == 0) then
+    print *, "FAILED: Should have detected invalid atom count"
+    call geom%destroy()
+    return
+  end if
+  
+  print *, "Correctly caught error:", trim(errmsg)
+  print *, "PASSED"
+  print *
+  
+  ! Test 6: Error handling - malformed coordinate line
+  print *, "Test 6: Error handling (malformed coordinates)"
+  print *, "------------------------------------------"
+  call read_xyz_string("1" // new_line('a') // &
+                       "Test" // new_line('a') // &
+                       "C  1.0  invalid  3.0", geom, stat, errmsg)
+  
+  if (stat == 0) then
+    print *, "FAILED: Should have detected malformed coordinates"
+    call geom%destroy()
+    return
+  end if
+  
+  print *, "Correctly caught error:", trim(errmsg)
+  print *, "PASSED"
+  print *
+
+    ! Test 7: Read from file (prism.xyz)
+  print *, "Test 7: Reading from prism.xyz file"
+  print *, "------------------------------------------"
+  call read_xyz_file("prism.xyz", geom, stat, errmsg)
+  
+  if (stat /= 0) then
+    print *, "WARNING: Could not read prism.xyz (file may not exist)"
+    print *, "Error: ", errmsg
+    print *, "SKIPPED"
+    print *
+  else
+    print *, "Number of atoms:", geom%natoms
+    print *, "Comment:", trim(geom%comment)
+    print *
+    print *, "Geometry:"
+    do i = 1, min(geom%natoms, 10)  ! Print first 10 atoms max
+      print '(2X, A4, 3F12.6)', geom%elements(i), geom%coords(:, i)
+    end do
+    if (geom%natoms > 10) then
+      print *, "  ... (", geom%natoms - 10, " more atoms)"
+    end if
+    print *
+    print *, "PASSED"
+    print *
+    call geom%destroy()
+  end if
+
+  print *, "=========================================="
+  print *, "All XYZ Reader Tests PASSED!"
+  print *, "=========================================="
+  
+end subroutine test_xyz_reader
 
 end program main
