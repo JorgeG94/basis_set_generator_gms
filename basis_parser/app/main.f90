@@ -32,6 +32,8 @@ program main
 
   call test_xyz_reader()
 
+  call test_prism_with_basis()
+
 contains
 
   subroutine test_classify_lines()
@@ -407,7 +409,166 @@ subroutine test_xyz_reader()
   print *, "=========================================="
   print *, "All XYZ Reader Tests PASSED!"
   print *, "=========================================="
-  
+
 end subroutine test_xyz_reader
+
+subroutine test_prism_with_basis()
+  type(geometry_type) :: geom
+  type(basis_file_t) :: basis_file
+  type(molecular_basis_type) :: mol_basis
+  integer :: stat, iatom, ishell
+  character(len=:), allocatable :: errmsg, element_content
+  character(len=*), parameter :: xyz_file = "prism.xyz"
+  character(len=*), parameter :: basis_file_name = "6-31G.txt"
+  character(len=10), allocatable :: element_names(:)
+
+  print *
+  print *, "=========================================="
+  print *, "Testing Prism Molecule with 6-31G Basis"
+  print *, "=========================================="
+  print *
+
+  ! Read geometry from XYZ file
+  print *, "Step 1: Reading geometry from ", xyz_file
+  print *, "------------------------------------------"
+  call read_xyz_file(xyz_file, geom, stat, errmsg)
+
+  if (stat /= 0) then
+    print *, "WARNING: Could not read ", xyz_file
+    print *, "Error: ", errmsg
+    print *, "SKIPPED"
+    return
+  end if
+
+  print *, "Successfully read geometry"
+  print *, "  Number of atoms: ", geom%natoms
+  print *, "  Comment: ", trim(geom%comment)
+  print *
+
+  ! Show first few atoms
+  print *, "First 5 atoms:"
+  do iatom = 1, min(5, geom%natoms)
+    print '(2X, I3, 2X, A4, 3F12.6)', iatom, geom%elements(iatom), geom%coords(:, iatom)
+  end do
+  if (geom%natoms > 5) then
+    print *, "  ... (", geom%natoms - 5, " more atoms)"
+  end if
+  print *
+
+  ! Convert element symbols to full names for basis lookup
+  allocate(element_names(geom%natoms))
+  do iatom = 1, geom%natoms
+    element_names(iatom) = symbol_to_name(geom%elements(iatom))
+  end do
+
+  ! Open basis set file
+  print *, "Step 2: Loading basis set from ", basis_file_name
+  print *, "------------------------------------------"
+  call open_basis_file(basis_file, basis_file_name)
+  print *, "Successfully loaded basis set file"
+  print *
+
+  ! Build molecular basis
+  print *, "Step 3: Building molecular basis set"
+  print *, "------------------------------------------"
+  call build_molecular_basis(basis_file%data_section, element_names, mol_basis, stat, errmsg)
+
+  if (stat /= 0) then
+    print *, "FAILED: ", errmsg
+    call geom%destroy()
+    return
+  end if
+
+  print *, "Successfully built molecular basis set!"
+  print *
+
+  ! Print summary statistics
+  print *, "=========================================="
+  print *, "Basis Set Summary"
+  print *, "=========================================="
+  print *, "Total number of atoms:      ", mol_basis%nelements
+  print *, "Total basis functions:      ", mol_basis%num_basis_functions()
+  print *
+
+  ! Count shells by element type
+  print *, "Basis functions per atom type:"
+  do iatom = 1, min(3, mol_basis%nelements)
+    print '(2X, A4, ":", I4, " basis functions from", I3, " shells")', &
+      trim(mol_basis%elements(iatom)%element), &
+      mol_basis%elements(iatom)%num_basis_functions(), &
+      mol_basis%elements(iatom)%nshells
+  end do
+  if (mol_basis%nelements > 3) then
+    print *, "  ... (", mol_basis%nelements - 3, " more atoms)"
+  end if
+  print *
+
+  ! Show detailed basis for first atom
+  print *, "Detailed basis for atom 1 (", trim(mol_basis%elements(1)%element), "):"
+  print *, "------------------------------------------"
+  do ishell = 1, mol_basis%elements(1)%nshells
+    print '(2X, "Shell ", I0, " (", A, "): ", I0, " primitives, ", I0, " basis functions")', &
+      ishell, &
+      ang_mom_int_to_char(mol_basis%elements(1)%shells(ishell)%ang_mom), &
+      mol_basis%elements(1)%shells(ishell)%nfunc, &
+      mol_basis%elements(1)%shells(ishell)%num_basis_functions()
+  end do
+  print *
+
+  ! Cleanup
+  call geom%destroy()
+  call mol_basis%destroy()
+
+  print *, "=========================================="
+  print *, "Test PASSED!"
+  print *, "=========================================="
+
+end subroutine test_prism_with_basis
+
+!> Convert element symbol to full name for basis file lookup
+function symbol_to_name(symbol) result(name)
+  character(len=*), intent(in) :: symbol
+  character(len=10) :: name
+  character(len=10) :: sym_upper
+
+  ! Convert to uppercase
+  sym_upper = symbol
+  call to_upper(sym_upper)
+
+  select case (trim(sym_upper))
+  case ("H")
+    name = "HYDROGEN"
+  case ("C")
+    name = "CARBON"
+  case ("N")
+    name = "NITROGEN"
+  case ("O")
+    name = "OXYGEN"
+  case ("F")
+    name = "FLUORINE"
+  case ("P")
+    name = "PHOSPHORUS"
+  case ("S")
+    name = "SULFUR"
+  case ("CL")
+    name = "CHLORINE"
+  case default
+    ! If not recognized, return the symbol as-is
+    name = sym_upper
+  end select
+end function symbol_to_name
+
+!> Convert string to uppercase
+subroutine to_upper(str)
+  character(len=*), intent(inout) :: str
+  integer :: i, ic
+
+  do i = 1, len(str)
+    ic = iachar(str(i:i))
+    if (ic >= iachar('a') .and. ic <= iachar('z')) then
+      str(i:i) = achar(ic - 32)
+    end if
+  end do
+end subroutine to_upper
 
 end program main

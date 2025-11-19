@@ -308,7 +308,7 @@ end subroutine count_shells_for_element
 
     stat = 0
     in_data_block = .false.
-    in_target_element = .true.
+    in_target_element = .false.
     ishell = 0
     reading_l_shell = .false.
 
@@ -329,13 +329,11 @@ end subroutine count_shells_for_element
       !   end if
 
       case (LINE_ATOM)
-        if (in_data_block) then
-          if (strings_equal(line, element_name)) then
-            in_target_element = .true.
-          else
-            if (in_target_element) exit
-            in_target_element = .false.
-          end if
+        if (strings_equal(line, element_name)) then
+          in_target_element = .true.
+        else
+          if (in_target_element) exit
+          in_target_element = .false.
         end if
 
       case (LINE_SHELL)
