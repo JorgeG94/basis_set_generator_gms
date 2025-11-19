@@ -8,7 +8,6 @@ module gms_xyz_reader
 
   ! Parameters
   integer, parameter :: MAX_ELEMENT_SYMBOL_LEN = 4
-  integer, parameter :: MAX_ATOMS = 1000000  ! Reasonable upper limit
   
   type :: geometry_type
     integer :: natoms
@@ -100,13 +99,6 @@ subroutine read_xyz_string(xyz_string, geom, stat, errmsg)
   if (geom%natoms < 0) then
     stat = 1
     errmsg = "Number of atoms must be non-negative"
-    return
-  end if
-
-  if (geom%natoms > MAX_ATOMS) then
-    stat = 1
-    errmsg = "Number of atoms exceeds maximum allowed (" // &
-             trim(int_to_string(MAX_ATOMS)) // ")"
     return
   end if
 
